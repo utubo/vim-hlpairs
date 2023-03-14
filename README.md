@@ -1,6 +1,6 @@
 TODO
 
-# vim-hlpairs.vim
+# vim-hlpairs
 
 vim-hlpairs Highlight the parentheses around the cursor.
 
@@ -11,7 +11,7 @@ Vim9script
 ## Installation
 
 ```vim
-call dein#add('utubo/vim-hlpairs.vim')
+call dein#add('utubo/vim-hlpairs')
 
 
 # optional
