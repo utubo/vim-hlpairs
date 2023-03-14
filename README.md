@@ -11,7 +11,7 @@ Vim9script
 ## Installation
 
 ```vim
-call dein#add('utubo/vim-hlpairs.nvim')
+call dein#add('utubo/vim-hlpairs.vim')
 
 
 # optional
