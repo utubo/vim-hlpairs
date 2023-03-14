@@ -1,6 +1,6 @@
 TODO
 
-# vim-hlpairs.nvim
+# vim-hlpairs.vim
 
 vim-hlpairs Highlight the parentheses around the cursor.
 
