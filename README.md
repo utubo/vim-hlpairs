@@ -15,7 +15,7 @@ call dein#add('utubo/vim-hlpairs.vim')
 
 
 # optional
-NoMatachParen
+NoMatchParen
 nnoremap % <Cmd>hlpairs#Jump()<CR>
 ```
 
