@@ -2,11 +2,13 @@ TODO
 
 # vim-hlpairs
 
-vim-hlpairs Highlight the parentheses around the cursor.
+vim-hlpairs highlights the parentheses around the cursor.
 
 ```diff
 + if
     echo 'For example, the cursor is on this line.▌'
+    # vim-hlpairs highlights "if" and "endif".
+    # "+" is for color in markdown.
 + endif
 ```
 
@@ -29,8 +31,8 @@ nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 
 ### `g:hlpairs`
 
-- `delay` The delay millisecond to hilight.
-- `limit` Limit number of rows to search.
+- `delay` The delay milliseconds to highlight.
+- `limit` Limit number of lines to search.
 - `skip` See `:help searchpair()`
 - `filetype` parentheses for file types.
 
@@ -46,4 +48,11 @@ g:hlpairs = {
   },
 }
 ```
+
+### Color
+vim-hlsearch uses highlight group `MatchParen`.
+
+## Functions
+
+- `hlpairs#Jump()` Jump to the far pair.
 
