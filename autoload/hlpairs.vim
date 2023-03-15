@@ -17,14 +17,14 @@ export def Init()
   OptionSet()
   augroup hlpairs
     au!
-    au CursorMoved,CursorMovedI * silent! call hlpairs#CursorMoved()
-    au OptionSet matchpairs call hlpairs#OptionSet()
-    au WinNew,FileType * call hlpairs#OptionSet()
+    au CursorMoved,CursorMovedI * silent! call CursorMoved()
+    au OptionSet matchpairs call OptionSet()
+    au WinNew,FileType * call OptionSet()
   augroup End
 enddef
 
 var timer = 0
-export def CursorMoved()
+def CursorMoved()
   if timer !=# 0
     timer_stop(timer)
   endif
@@ -125,15 +125,12 @@ def GetLen(s: string): number
   return s->stridx('*') ==# -1 && s->stridx('\') ==# -1 ? len(s) : 0
 enddef
 
-export def OptionSet()
-  var start_regexs = []
+def OptionSet()
   var pairs = []
   const as_html = g:hlpairs.as_html->index(&filetype) !=# -1
   if as_html
     pairs += [{ s: '<[a-zA-Z0-9_:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, tag: true }]
-    start_regexs += ['<[a-zA-Z0-9_:]\+']
     pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, tag: false }]
-    start_regexs += ['<!--']
   endif
   const ftpairs = get(g:hlpairs.filetype, &filetype, '')
   for sme in &matchpairs->split(',') + ftpairs->split(',')
@@ -146,7 +143,10 @@ export def OptionSet()
     var e = ary[-1]
     const escaped_s = s ==# '[' ? '\[' : s
     pairs += [{ s: escaped_s, e: e, m: m, slen: GetLen(s), elen: GetLen(e), tag: false}]
-    start_regexs += [escaped_s]
+  endfor
+  var start_regexs = []
+  for p in pairs
+    start_regexs += [p.s]
   endfor
   w:hlpairs = get(w:, 'hlpairs', {
     matchid: 0,
