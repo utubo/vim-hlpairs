@@ -4,6 +4,12 @@ TODO
 
 vim-hlpairs Highlight the parentheses around the cursor.
 
+<pre><code>
+<span style="color:#333;background:#ce9;">if</span>
+  echo 'example, cursor is this line.'
+<span style="color:#333;background:#ce9;">endif</span>
+</code></pre>
+
 ## Requires
 
 Vim9script
