@@ -35,6 +35,7 @@ nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 - `limit` Limit number of lines to search.
 - `skip` See `:help searchpair()`
 - `filetype` parentheses for file types.
+- `as_html` The filetypes that highlight as HTML.
 
 The default is
 ```vimscript
@@ -46,6 +47,7 @@ g:hlpairs = {
     'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
     'ruby': '\<\(def\|do\|class\)\>:\<end\>'
   },
+  as_html: ['html', 'xml']
 }
 ```
 
