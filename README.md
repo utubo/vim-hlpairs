@@ -6,7 +6,7 @@ vim-hlpairs Highlight the parentheses around the cursor.
 
 ```diff
 + if
-  echo 'example, cursor is this line.'
+    echo 'example, cursor is this line.'
 + endif
 ```
 
