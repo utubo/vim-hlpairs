@@ -54,7 +54,7 @@ def HilightParens(t: any = 0)
 enddef
 
 def NewPos(org: list<number>, nest: number = 0): any
-  var spos = searchpos(w:hlpairs.start_regex, 'cbW', max([0, line('.') - g:hlpairs.limit]), 20)[0 : 1]
+  var spos = searchpos(w:hlpairs.start_regex, 'cbW', max([0, line('.') - g:hlpairs.limit]), 20, g:hlpairs.skip)[0 : 1]
   if spos[0] ==# 0
     return []
   endif
@@ -76,7 +76,7 @@ def NewPos(org: list<number>, nest: number = 0): any
   if !pair
     return []
   endif
-  var epos = searchpairpos(pair.s, '', pair.e, 'nW', '', line('.') + g:hlpairs.limit, 20)
+  var epos = searchpairpos(pair.s, '', pair.e, 'nW', g:hlpairs.skip, line('.') + g:hlpairs.limit, 20)
   text = getline(epos[0])
   if org[0] < epos[0] || org[0] ==# epos[0] && org[1] <= epos[1]
     idx = epos[1] - 1
