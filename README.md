@@ -16,7 +16,7 @@ call dein#add('utubo/vim-hlpairs')
 
 # optional
 NoMatchParen
-nnoremap % <Cmd>hlpairs#Jump()<CR>
+nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 ```
 
 ## Configuration
