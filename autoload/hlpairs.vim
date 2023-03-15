@@ -1,19 +1,15 @@
 vim9script
 
-var pairs = []
-var start_regex = ''
-var timer = 0
-
 export def Init()
   const override = get(g:, 'hlpairs', {})
   g:hlpairs = {
+    delay: 500,
+    limit: 50,
     skip: '',
     filetype: {
-      'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef',
+      'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
       'ruby': '\<\(def\|do\|class\)\>:\<end\>'
     },
-    limit: 50,
-    delay: 500,
   }
   g:hlpairs->extend(override)
   OptionSet()
@@ -21,10 +17,11 @@ export def Init()
     au!
     au CursorMoved,CursorMovedI * silent! call hlpairs#CursorMoved()
     au OptionSet matchpairs call hlpairs#OptionSet()
-    au FileType * call hlpairs#OptionSet()
+    au WinNew,FileType * call hlpairs#OptionSet()
   augroup End
 enddef
 
+var timer = 0
 export def CursorMoved()
   if timer !=# 0
     timer_stop(timer)
@@ -35,19 +32,21 @@ enddef
 def HilightParens(t: any = 0)
   timer = 0
   try
+    if !exists('w:hlpairs')
+      return
+    endif
     const cur = getpos('.')
     const new_pos = NewPos(cur[1 : 2])
     setpos('.', cur)
-    if get(w:, 'hlpairs_pos', []) !=# new_pos
-      const m = get(w:, 'hlpairs_id', 0)
-      if m !=# 0
-        matchdelete(m)
-        w:hlpairs_id = 0
+    if w:hlpairs.pos !=# new_pos
+      if w:hlpairs.matchid !=# 0
+        matchdelete(w:hlpairs.matchid)
+        w:hlpairs.matchid = 0
       endif
       if !!new_pos
-        w:hlpairs_id = matchaddpos('MatchParen', new_pos)
+        w:hlpairs.matchid = matchaddpos('MatchParen', new_pos)
       endif
-      w:hlpairs_pos = new_pos
+      w:hlpairs.pos = new_pos
     endif
   catch
     g:hlpairs_err = v:exception
@@ -55,14 +54,14 @@ def HilightParens(t: any = 0)
 enddef
 
 def NewPos(org: list<number>, nest: number = 0): any
-  var spos = searchpos(start_regex, 'cbW', max([0, line('.') - g:hlpairs.limit]), 20)[0 : 1]
+  var spos = searchpos(w:hlpairs.start_regex, 'cbW', max([0, line('.') - g:hlpairs.limit]), 20)[0 : 1]
   if spos[0] ==# 0
     return []
   endif
   var pair = {}
   var text = getline(spos[0])
   var idx = spos[1] - 1
-  for p in pairs
+  for p in w:hlpairs.pairs
     if match(text, p.s, idx) ==# idx
       pair = p
       if !pair.slen
@@ -105,25 +104,31 @@ enddef
 
 export def OptionSet()
   var start_regexs = []
-  pairs = []
+  var pairs = []
   const ftpairs = get(g:hlpairs.filetype, &filetype, '')
   for sme in &matchpairs->split(',') + ftpairs->split(',')
     const ary = sme->split(':')
     var s = ary[0]
     var m = len(ary) ==# 3 ? ary[1] : ''
     var e = ary[-1]
-    const slen = GetLen(s)
-    const elen = GetLen(e)
-    s = s ==# '[' ? '\[' : s
-    pairs += [{ s: s, e: e, m: m, slen: slen, elen: elen }]
-    start_regexs += [s]
+    const escaped_s = s ==# '[' ? '\[' : s
+    pairs += [{ s: escaped_s, e: e, m: m, slen: GetLen(s), elen: GetLen(e)}]
+    start_regexs += [escaped_s]
   endfor
-  start_regex = start_regexs->join('\|')
+  w:hlpairs = get(w:, 'hlpairs', {
+    matchid: 0,
+    pos: [],
+    ft: '',
+    pairs: [],
+    start_regex: '',
+  })
+  w:hlpairs.pairs = pairs
+  w:hlpairs.start_regex = start_regexs->join('\|')
 enddef
 
 export def Jump(): bool
   HilightParens()
-  const p = get(w:, 'hlpairs_pos', {})
+  const p = get(w:, 'hlpairs', { pos: [] }).pos
   if !p
     return false
   endif
