@@ -18,7 +18,6 @@ export def Init()
   augroup hlpairs
     au!
     au CursorMoved,CursorMovedI * silent! call hlpairs#CursorMoved()
-    #au CursorMoved,CursorMovedI * call hlpairs#CursorMoved()
     au OptionSet matchpairs call hlpairs#OptionSet()
     au WinNew,FileType * call hlpairs#OptionSet()
   augroup End
@@ -131,8 +130,8 @@ export def OptionSet()
   var pairs = []
   const as_html = g:hlpairs.as_html->index(&filetype) !=# -1
   if as_html
-    pairs += [{ s: '<[a-zA-Z:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, tag: true }]
-    start_regexs += ['<[a-zA-Z]\+']
+    pairs += [{ s: '<[a-zA-Z0-9_:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, tag: true }]
+    start_regexs += ['<[a-zA-Z0-9_:]\+']
     pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, tag: false }]
     start_regexs += ['<!--']
   endif
