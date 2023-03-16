@@ -24,6 +24,7 @@ nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 ### `g:hlpairs`
 
 - `delay` The delay milliseconds to highlight.
+- `Timeout` The search stops when more than this many milliseconds have passed.
 - `limit` Limit number of lines to search.
 - `skip` See `:help searchpair()`
 - `filetype` parentheses for file types.
@@ -33,6 +34,7 @@ The default is
 ```vimscript
 g:hlpairs = {
   delay: 500,
+  timeout: 20,
   limit: 50,
   skip: '',
   filetype: {
@@ -49,4 +51,10 @@ vim-hlsearch uses highlight group `MatchParen`.
 ## Functions
 
 - `hlpairs#Jump()` Jump to the far pair.
+
+## Author
+utubo (https://github.com/utubo)
+
+## License
+This software is released under the MIT License, see LICENSE.
 
