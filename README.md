@@ -46,7 +46,7 @@ g:hlpairs = {
 ```
 
 ### Color
-vim-hlsearch uses highlight group `MatchParen`.
+vim-hlpairs uses highlight group `MatchParen`.
 
 ## Functions
 
