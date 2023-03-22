@@ -21,6 +21,7 @@ export def Init()
     au OptionSet matchpairs call OptionSet()
     au WinNew,FileType * call OptionSet()
   augroup End
+  g:hlpairs.initialized = 1
 enddef
 
 var timer = 0
@@ -34,6 +35,10 @@ enddef
 def HilightParens(t: any = 0)
   timer = 0
   try
+    if !exists('g:hlpairs.initialized')
+      Init()
+      return
+    endif
     if !exists('w:hlpairs')
       return
     endif
