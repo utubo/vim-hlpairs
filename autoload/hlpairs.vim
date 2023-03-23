@@ -20,7 +20,7 @@ export def Init()
     au!
     au CursorMoved,CursorMovedI * silent! call CursorMoved()
     au OptionSet matchpairs call OptionSet()
-    au WinNew,BufRead,FileType * call OptionSet()
+    au WinNew,FileType * call OptionSet()
   augroup End
   g:hlpairs.initialized = 1
 enddef
@@ -154,13 +154,17 @@ def OptionSet()
   for p in pairs
     start_regexs += [p.s]
   endfor
+  # keep old positions
   w:hlpairs = get(w:, 'hlpairs', {
     matchid: 0,
     pos: [],
     ft: '',
-    pairs: pairs,
-    start_regex: start_regexs->join('\|'),
+    pairs: [],
+    start_regex: '',
   })
+  # set the new settings
+  w:hlpairs.pairs = pairs
+  w:hlpairs.start_regex = start_regexs->join('\|')
 enddef
 
 export def Jump(): bool
