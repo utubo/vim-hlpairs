@@ -8,9 +8,9 @@ export def Init()
     limit: 50,
     skip: '',
     filetype: {
-      'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry,\<\w\+(:)',
+      'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
       'ruby': '\<\(def\|do\|class\)\>:\<end\>',
-      'javascript': '\<\w\+(:)',
+      '*': '\<\w\+(:)',
     },
     as_html: ['html', 'xml']
   }
@@ -139,7 +139,7 @@ def OptionSet()
     pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, is_tag: false }]
   endif
   const ftpairs = get(g:hlpairs.filetype, &filetype, '')
-  for sme in ftpairs->split(',') + &matchpairs->split(',')
+  for sme in ftpairs->split(',') + g:hlpairs.filetype['*']->split(',') + &matchpairs->split(',')
     if as_html && sme ==# '<:>'
       continue
     endif
