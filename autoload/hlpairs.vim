@@ -8,7 +8,7 @@ export def Init()
     limit: 50,
     skip: '',
     filetype: {
-      'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
+      'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry,\<\w\+(:)',
       'ruby': '\<\(def\|do\|class\)\>:\<end\>'
     },
     as_html: ['html', 'xml']
@@ -102,12 +102,12 @@ def NewPos(org: list<number>, nest: number = 0): any
     s, '', e,
     'nW',
     g:hlpairs.skip,
-    line('.') + g:hlpairs.limit,
+    org[0] + g:hlpairs.limit,
     g:hlpairs.timeout
   )
   text = getline(epos[0])
+  idx = epos[1] - 1
   if org[0] < epos[0] || org[0] ==# epos[0] && org[1] <= epos[1]
-    idx = epos[1] - 1
     if !pair.elen
       epos += [matchstr(text, e, idx)->len()]
     else
@@ -138,14 +138,14 @@ def OptionSet()
     pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, is_tag: false }]
   endif
   const ftpairs = get(g:hlpairs.filetype, &filetype, '')
-  for sme in &matchpairs->split(',') + ftpairs->split(',')
+  for sme in ftpairs->split(',') + &matchpairs->split(',')
     if as_html && sme ==# '<:>'
       continue
     endif
     const ary = sme->split(':')
-    var s = ary[0]
-    var m = len(ary) ==# 3 ? ary[1] : ''
-    var e = ary[-1]
+    const s = ary[0]
+    const m = len(ary) ==# 3 ? ary[1] : ''
+    const e = ary[-1]
     const s_regex = s ==# '[' ? '\[' : s
     pairs += [{ s: s_regex, e: e, m: m, slen: GetLen(s), elen: GetLen(e), is_tag: false}]
   endfor

@@ -38,7 +38,7 @@ g:hlpairs = {
   limit: 50,
   skip: '',
   filetype: {
-    'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
+    'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry,\<\w\+(:)',
     'ruby': '\<\(def\|do\|class\)\>:\<end\>'
   },
   as_html: ['html', 'xml']
