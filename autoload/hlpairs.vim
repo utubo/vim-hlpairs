@@ -20,7 +20,7 @@ export def Init()
     au!
     au CursorMoved,CursorMovedI * silent! call CursorMoved()
     au OptionSet matchpairs call OptionSet()
-    au BufRead,FileType * call OptionSet()
+    au WinNew,BufRead,FileType * call OptionSet()
   augroup End
   g:hlpairs.initialized = 1
 enddef
