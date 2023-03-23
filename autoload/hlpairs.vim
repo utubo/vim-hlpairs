@@ -29,10 +29,10 @@ def CursorMoved()
   if timer !=# 0
     timer_stop(timer)
   endif
-  timer = timer_start(g:hlpairs.delay, HilightParens)
+  timer = timer_start(g:hlpairs.delay, HighlightPair)
 enddef
 
-def HilightParens(t: any = 0)
+def HighlightPair(t: any = 0)
   timer = 0
   try
     if !exists('g:hlpairs.initialized')
@@ -94,7 +94,7 @@ def NewPos(org: list<number>, nest: number = 0): any
   endif
   var s = pair.s
   var e = pair.e
-  if pair.tag
+  if pair.is_tag
     s = start_str
     e = '</' .. start_str[1 : ]->substitute('>\?$', '>\\?', '')
   endif
@@ -134,8 +134,8 @@ def OptionSet()
   var pairs = []
   const as_html = g:hlpairs.as_html->index(&filetype) !=# -1
   if as_html
-    pairs += [{ s: '<[a-zA-Z0-9_:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, tag: true }]
-    pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, tag: false }]
+    pairs += [{ s: '<[a-zA-Z0-9_:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, is_tag: true }]
+    pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, is_tag: false }]
   endif
   const ftpairs = get(g:hlpairs.filetype, &filetype, '')
   for sme in &matchpairs->split(',') + ftpairs->split(',')
@@ -146,8 +146,8 @@ def OptionSet()
     var s = ary[0]
     var m = len(ary) ==# 3 ? ary[1] : ''
     var e = ary[-1]
-    const escaped_s = s ==# '[' ? '\[' : s
-    pairs += [{ s: escaped_s, e: e, m: m, slen: GetLen(s), elen: GetLen(e), tag: false}]
+    const s_regex = s ==# '[' ? '\[' : s
+    pairs += [{ s: s_regex, e: e, m: m, slen: GetLen(s), elen: GetLen(e), is_tag: false}]
   endfor
   var start_regexs = []
   for p in pairs
@@ -157,15 +157,13 @@ def OptionSet()
     matchid: 0,
     pos: [],
     ft: '',
-    pairs: [],
-    start_regex: '',
+    pairs: pairs,
+    start_regex: start_regexs->join('\|'),
   })
-  w:hlpairs.pairs = pairs
-  w:hlpairs.start_regex = start_regexs->join('\|')
 enddef
 
 export def Jump(): bool
-  HilightParens()
+  HighlightPair()
   const p = get(w:, 'hlpairs', { pos: [] }).pos
   if !p
     return false
