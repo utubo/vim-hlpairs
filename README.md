@@ -24,10 +24,11 @@ nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 ### `g:hlpairs`
 
 - `delay` The delay milliseconds to highlight.
-- `imeout` The search stops when more than this many milliseconds have passed.
+- `timeout` The search stops when more than this many milliseconds have passed.
 - `limit` Limit number of lines to search.
 - `skip` See `:help searchpair()`
-- `filetype` parentheses for file types.
+- `filetype` The parentheses for file types.  
+  `*` is any filetype.
 - `as_html` The filetypes that highlight as HTML.
 
 The default is
