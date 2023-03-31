@@ -44,24 +44,27 @@ def HighlightPair(t: any = 0)
       return
     endif
     const cur = getpos('.')
-    const new_pos = NewPos(cur[1 : 2])
+    const new_pos = FindPairs(cur[1 : 2])
     setpos('.', cur)
-    if w:hlpairs.pos !=# new_pos
-      if w:hlpairs.matchid !=# 0
-        matchdelete(w:hlpairs.matchid)
-        w:hlpairs.matchid = 0
-      endif
-      if !!new_pos
-        w:hlpairs.matchid = matchaddpos('MatchParen', new_pos)
-      endif
-      w:hlpairs.pos = new_pos
+    if w:hlpairs.pos ==# new_pos
+      # nothing update
+      return
+    endif
+    w:hlpairs.pos = new_pos
+    if w:hlpairs.matchid !=# 0
+      matchdelete(w:hlpairs.matchid)
+      w:hlpairs.matchid = 0
+    endif
+    if !!new_pos
+      w:hlpairs.matchid = matchaddpos('MatchParen', new_pos)
     endif
   catch
     g:hlpairs_err = v:exception
   endtry
 enddef
 
-def NewPos(org: list<number>, nest: number = 0): any
+def FindPairs(org: list<number>, nest: number = 0): any
+  # find the start
   var spos = searchpos(
     w:hlpairs.start_regex,
     'cbW',
@@ -72,6 +75,7 @@ def NewPos(org: list<number>, nest: number = 0): any
   if spos[0] ==# 0
     return []
   endif
+  # get the pair of start
   var pair = {}
   var text = getline(spos[0])
   var idx = spos[1] - 1
@@ -99,6 +103,7 @@ def NewPos(org: list<number>, nest: number = 0): any
     s = start_str
     e = '</' .. start_str[1 : ]->substitute('>\?$', '>\\?', '')
   endif
+  # find the end
   var epos = searchpairpos(
     s, '', e,
     'nW',
@@ -123,11 +128,11 @@ def NewPos(org: list<number>, nest: number = 0): any
     else
       setpos('.', [0, spos[0], spos[1] - 1])
     endif
-    return NewPos(org, nest + 1)
+    return FindPairs(org, nest + 1)
   endif
 enddef
 
-def GetLen(s: string): number
+def ConstantLength(s: string): number
   return s->stridx('*') ==# -1 && s->stridx('\') ==# -1 ? len(s) : 0
 enddef
 
@@ -144,11 +149,17 @@ def OptionSet()
       continue
     endif
     const ary = sme->split(':')
-    const s = ary[0]
-    const m = len(ary) ==# 3 ? ary[1] : ''
-    const e = ary[-1]
-    const s_regex = s ==# '[' ? '\[' : s
-    pairs += [{ s: s_regex, e: e, m: m, slen: GetLen(s), elen: GetLen(e), is_tag: false}]
+    const start = ary[0]
+    const middle = len(ary) ==# 3 ? ary[1] : ''
+    const end = ary[-1]
+    pairs += [{
+      s: start ==# '[' ? '\[' : start,
+      m: middle,
+      e: end,
+      slen: ConstantLength(start),
+      elen: ConstantLength(end),
+      is_tag: false
+    }]
   endfor
   var start_regexs = []
   for p in pairs
