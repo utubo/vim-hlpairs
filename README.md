@@ -4,7 +4,7 @@ vim-hlpairs highlights the parentheses around the cursor.
 
 <img src="https://user-images.githubusercontent.com/6848636/225357852-5eca2053-ee41-41a3-9d57-d6bd249b29cc.gif" width="400">
 
-## Requires
+## Requirements
 
 Vim9script
 
