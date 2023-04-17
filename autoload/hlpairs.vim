@@ -19,7 +19,6 @@ export def Init()
   augroup hlpairs
     au!
     au CursorMoved,CursorMovedI * silent! call CursorMoved()
-    #au CursorMoved,CursorMovedI * call CursorMoved()
     au OptionSet matchpairs call OptionSet()
     au WinNew,FileType * call OptionSet()
   augroup End
