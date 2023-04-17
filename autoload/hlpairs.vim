@@ -19,6 +19,7 @@ export def Init()
   augroup hlpairs
     au!
     au CursorMoved,CursorMovedI * silent! call CursorMoved()
+    #au CursorMoved,CursorMovedI * call CursorMoved()
     au OptionSet matchpairs call OptionSet()
     au WinNew,FileType * call OptionSet()
   augroup End
@@ -113,17 +114,17 @@ def FindPairs(org: list<number>, nest: number = 0): any
   )
   text = getline(epos[0])
   idx = epos[1] - 1
-  if org[0] < epos[0] || org[0] ==# epos[0] && org[1] <= epos[1]
-    if !pair.elen
-      epos += [matchstr(text, e, idx)->len()]
-    else
-      epos += [pair.elen]
-    endif
+  if epos[0] !=# 0 && !pair.elen
+    epos += [matchstr(text, e, idx)->len()]
+  else
+    epos += [pair.elen]
+  endif
+  if org[0] < epos[0] || org[0] ==# epos[0] && org[1] <= idx + epos[2]
     return [spos, epos]
   elseif g:hlpairs.limit < nest
     return []
   else
-    if len(text) <= idx
+    if text->len() <= idx
       setpos('.', [0, spos[0] - 1, getline(spos[0] - 1)->len()])
     else
       setpos('.', [0, spos[0], spos[1] - 1])
