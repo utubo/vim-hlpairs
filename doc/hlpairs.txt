@@ -71,6 +71,8 @@ g:hlpairs					*g:hlpairs*
 				millisecond shave passed.
 		`limit` 	Limit number of lines to search.
 		`skip` 		See `:help searchpair()`
+				You can set a string or
+				a dictionary<filetype: expr>
 		`filetype`	The parentheses for file types.
 				`*` is any filetype.
 		`as_html` 	The filetypes that highlight as HTML.
@@ -81,12 +83,14 @@ g:hlpairs					*g:hlpairs*
 	  delay: 500,
 	  timeout: 20,
 	  limit: 50,
-	  skip: '',
 	  filetype: {
 	    'vim': '\<if\>:else:endif,for:endfor,while:endwhile,'
 	        .. 'function:endfunction,\<def\>:enddef,\<try\>:endtry',
-	    'ruby': '\<\(def\|do\|class\)\>:\<end\>',
+	    'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
 	    '*': '\w\@<!\w*(:)',
+	  },
+	  skip: {
+	    'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
 	  },
 	  as_html: ['html', 'xml']
 	}

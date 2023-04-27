@@ -6,11 +6,13 @@ export def Init()
     delay: 500,
     timeout: 20,
     limit: 50,
-    skip: '',
     filetype: {
       'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
-      'ruby': '\<\(def\|do\|class\)\>:\<end\>',
+      'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
       '*': '\w\@<!\w*(:)',
+    },
+    skip: {
+      'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
     },
     as_html: ['html', 'xml']
   }
@@ -70,7 +72,7 @@ def FindPairs(org: list<number>, nest: number = 0): any
     'cbW',
     max([0, line('.') - g:hlpairs.limit]),
     g:hlpairs.timeout,
-    g:hlpairs.skip
+    w:hlpairs.skip
   )
   if spos[0] ==# 0
     return []
@@ -107,7 +109,7 @@ def FindPairs(org: list<number>, nest: number = 0): any
   var epos = searchpairpos(
     s, '', e,
     'nW',
-    g:hlpairs.skip,
+    w:hlpairs.skip,
     org[0] + g:hlpairs.limit,
     g:hlpairs.timeout
   )
@@ -176,6 +178,11 @@ def OptionSet()
   # set the new settings
   w:hlpairs.pairs = pairs
   w:hlpairs.start_regex = start_regexs->join('\|')
+  if type(g:hlpairs.skip) ==# type({})
+    w:hlpairs.skip = get(g:hlpairs.skip, &filetype, get(g:hlpairs.skip, '*', ''))
+  else
+    w:hlpairs.skip = g:hlpairs.skip
+  endif
 enddef
 
 export def Jump(): bool

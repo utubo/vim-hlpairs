@@ -26,7 +26,8 @@ nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 - `delay` The delay milliseconds to highlight.
 - `timeout` The search stops when more than this many milliseconds have passed.
 - `limit` Limit number of lines to search.
-- `skip` See `:help searchpair()`
+- `skip` See `:help searchpair()`.
+  You can set a string or a dictionary&lt;filetype: expr&gt;.
 - `filetype` The parentheses for file types.  
   `*` is any filetype.
 - `as_html` The filetypes that highlight as HTML.
@@ -37,11 +38,13 @@ g:hlpairs = {
   delay: 500,
   timeout: 20,
   limit: 50,
-  skip: '',
   filetype: {
     'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
-    'ruby': '\<\(def\|do\|class\)\>:\<end\>',
+    'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
     '*': '\w\@<!\w*(:)',
+  },
+  skip: {
+    'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
   },
   as_html: ['html', 'xml']
 }
