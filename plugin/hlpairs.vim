@@ -5,8 +5,5 @@ if exists('g:loaded_hlpairs')
 endif
 g:loaded_hlpairs = 1
 
-augroup hlpairs
-  au!
-  au VimEnter * call hlpairs#Init()
-augroup End
+hlpairs#Init()
 

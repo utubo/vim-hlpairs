@@ -3,7 +3,7 @@ vim9script
 export def Init()
   const override = get(g:, 'hlpairs', {})
   g:hlpairs = {
-    delay: 500,
+    delay: 200,
     timeout: 20,
     limit: 50,
     filetype: {
@@ -31,12 +31,12 @@ var timer = 0
 def CursorMoved()
   if timer !=# 0
     timer_stop(timer)
+    timer = 0
   endif
   timer = timer_start(g:hlpairs.delay, HighlightPair)
 enddef
 
 def HighlightPair(t: any = 0)
-  timer = 0
   try
     if !exists('g:hlpairs.initialized')
       Init()
@@ -138,6 +138,21 @@ def ConstantLength(s: string): number
   return s->stridx('*') ==# -1 && s->stridx('\') ==# -1 ? len(s) : 0
 enddef
 
+def GetWindowValues(retry: bool = false): any
+  var w = get(w:, 'hlpairs', {
+    matchid: 0,
+    pos: [],
+    ft: '',
+    pairs: [],
+    start_regex: '',
+  })
+  if !!w.pos || !retry
+    return w
+  endif
+  HighlightPair()
+  return GetWindowValues()
+enddef
+
 def OptionSet()
   var pairs = []
   const as_html = g:hlpairs.as_html->index(&filetype) !=# -1
@@ -168,13 +183,7 @@ def OptionSet()
     start_regexs += [p.s]
   endfor
   # keep old positions
-  w:hlpairs = get(w:, 'hlpairs', {
-    matchid: 0,
-    pos: [],
-    ft: '',
-    pairs: [],
-    start_regex: '',
-  })
+  w:hlpairs = GetWindowValues()
   # set the new settings
   w:hlpairs.pairs = pairs
   w:hlpairs.start_regex = start_regexs->join('\|')
@@ -186,19 +195,29 @@ def OptionSet()
 enddef
 
 export def Jump(): bool
-  HighlightPair()
-  const p = get(w:, 'hlpairs', { pos: [] }).pos
+  var p = GetWindowValues(true).pos
   if !p
     return false
   endif
   const cy = (p[0][0] + p[1][0]) / 2
   const cx = (p[0][1] + p[1][1]) / 2
   const c = getpos('.')[1 : 2]
-  if c[0] < cy || c[0] ==# cy && c[1] < cx
+  if c[0] < cy || p[0][0] ==# p[1][0] && c[1] < cx
     setpos('.', [0, p[1][0], p[1][1]])
   else
     setpos('.', [0, p[0][0], p[0][1]])
   endif
   return true
+enddef
+
+export def HighlightOuter()
+  const p = GetWindowValues(true).pos
+  if !p
+    return
+  endif
+  const c = getcurpos()
+  setpos('.', [0, p[0][0], p[0][1] - 1])
+  HighlightPair()
+  setpos('.', c)
 enddef
 
