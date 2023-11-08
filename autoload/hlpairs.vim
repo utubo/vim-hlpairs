@@ -90,6 +90,7 @@ def FindPairs(org: list<number>, nest: number = 0): any
   var text = getline(spos[0])
   var idx = spos[1] - 1
   var start_str = ''
+  var slen = 0
   for p in w:hlpairs.pairs
     if match(text, p.s, idx) !=# idx
       continue
@@ -97,11 +98,12 @@ def FindPairs(org: list<number>, nest: number = 0): any
     pair = p
     if !pair.slen
       start_str = matchstr(text, pair.s, idx)
-      spos += [start_str->len()]
+      slen = start_str->len()
     else
       start_str = pair.s
-      spos += [pair.slen]
+      slen = pair.slen
     endif
+    spos += [slen]
     break
   endfor
   if !pair
@@ -114,13 +116,22 @@ def FindPairs(org: list<number>, nest: number = 0): any
     e = '</' .. start_str[1 : ]->substitute('>\?$', '>\\?', '')
   endif
   # find the end
-  var epos = searchpairpos(
-    s, '', e,
-    'nW',
-    w:hlpairs.skip,
-    org[0] + g:hlpairs.limit,
-    g:hlpairs.timeout
-  )
+  var epos = []
+  if !!pair.elen && e ==# start_str[slen - pair.elen :]
+    # searchpairpos() does not work the start-word ends with the end-word
+    setpos('.', [0, spos[0], spos[1] + spos[2] - 1])
+    epos = searchpos(e, 'nW', org[0] + g:hlpairs.limit, g:hlpairs.timeout)
+    g:aaa = spos
+    g:bbb = epos
+  else
+    epos = searchpairpos(
+      s, '', e,
+      'nW',
+      w:hlpairs.skip,
+      org[0] + g:hlpairs.limit,
+      g:hlpairs.timeout
+    )
+  endif
   text = getline(epos[0])
   idx = epos[1] - 1
   if epos[0] !=# 0 && !pair.elen
@@ -165,6 +176,7 @@ def OptionSet()
   var pairs = []
   const as_html = g:hlpairs.as_html->index(&filetype) !=# -1
   if as_html
+    pairs += [{ s: '\<[a-zA-Z0-9_:]\+="', e: '"', m: '', slen: 0, elen: 1, is_tag: false }]
     pairs += [{ s: '<[a-zA-Z0-9_:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, is_tag: true }]
     pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, is_tag: false }]
   endif
