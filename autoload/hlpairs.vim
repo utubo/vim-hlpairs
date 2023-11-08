@@ -1,5 +1,8 @@
 vim9script
 
+var mark = [] # origin cursorpos
+var skipMark = 0
+
 export def Init()
   const override = get(g:, 'hlpairs', {})
   g:hlpairs = {
@@ -46,6 +49,11 @@ def HighlightPair(t: any = 0)
       return
     endif
     const cur = getpos('.')
+    if skipMark
+      skipMark -= 1
+    else
+      mark = cur[:]
+    endif
     const new_pos = FindPairs(cur[1 : 2])
     setpos('.', cur)
     if w:hlpairs.pos ==# new_pos
@@ -202,6 +210,7 @@ export def Jump(): bool
   const cy = (p[0][0] + p[1][0]) / 2
   const cx = (p[0][1] + p[1][1]) / 2
   const c = getpos('.')[1 : 2]
+  skipMark = 1
   if c[0] < cy || p[0][0] ==# p[1][0] && c[1] < cx
     setpos('.', [0, p[1][0], p[1][1]])
   else
@@ -210,12 +219,19 @@ export def Jump(): bool
   return true
 enddef
 
+export def ReturnCursor()
+  if !!mark
+    setpos('.', mark)
+  endif
+enddef
+
 export def HighlightOuter()
   const p = GetWindowValues(true).pos
   if !p
     return
   endif
   const c = getcurpos()
+  skipMark = 1
   setpos('.', [0, p[0][0], p[0][1] - 1])
   HighlightPair()
   setpos('.', c)

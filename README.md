@@ -18,6 +18,7 @@ call dein#add('utubo/vim-hlpairs')
 g:loaded_matchparen = 1
 autocmd VimEnter * nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 nnoremap <Leader>% <ScriptCmd>call hlpairs#HighlightOuter()<CR>
+nnoremap <Space>% <ScriptCmd>call hlpairs#ReturnCursor()<CR>
 ```
 
 `nnoremap %` on VimEnter for override matchit.vim.
@@ -61,6 +62,8 @@ vim-hlpairs uses highlight group `MatchParen`.
 - `hlpairs#Jump()` Jump to the far pair.
 
 - `hlpairs#HiglihtOuter()`	Highlight the pair outside of the current pair.
+
+- `hlpairs#ReturnCursor()`	Return the cursor before `hlpairs#Jump()`.
 
 ## Author
 utubo (https://github.com/utubo)
