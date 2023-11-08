@@ -118,18 +118,17 @@ def FindPairs(org: list<number>, nest: number = 0): any
   # find the end
   var epos = []
   if !!pair.elen && e ==# start_str[slen - pair.elen :]
-    # searchpairpos() does not work the start-word ends with the end-word
-    setpos('.', [0, spos[0], spos[1] + spos[2] - 1])
-    epos = searchpos(e, 'nW', org[0] + g:hlpairs.limit, g:hlpairs.timeout)
-  else
-    epos = searchpairpos(
-      s, '', e,
-      'nW',
-      w:hlpairs.skip,
-      org[0] + g:hlpairs.limit,
-      g:hlpairs.timeout
-    )
+    # searchpairpos() does not work the start-word ends with the end-word,
+    # so search end-word after start-word.
+    e = $'\(\%{spos[0]}l\%{spos[1] + spos[2]}c.*\)\@<={e}\|\%{spos[0] + 1}l\@<={e}'
   endif
+  epos = searchpairpos(
+    s, '', e,
+    'nW',
+    w:hlpairs.skip,
+    org[0] + g:hlpairs.limit,
+    g:hlpairs.timeout
+  )
   text = getline(epos[0])
   idx = epos[1] - 1
   if epos[0] !=# 0 && !pair.elen
