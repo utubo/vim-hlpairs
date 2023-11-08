@@ -211,15 +211,15 @@ def OptionSet()
   endif
 enddef
 
-export def Jump(flag: string = ''): bool
+export def Jump(flags: string = ''): bool
   const p = GetWindowValues(true).pos
   if !p
     return false
   endif
   var index = 0
-  if flag ==# 'f'
+  if flags =~# 'f'
     index = 1
-  elseif flag ==# 'b'
+  elseif flags =~# 'b'
     index = 0
   else
     const cy = (p[0][0] + p[1][0]) / 2
@@ -227,17 +227,10 @@ export def Jump(flag: string = ''): bool
     const c = getpos('.')[1 : 2]
     index = (c[0] < cy || p[0][0] ==# p[1][0] && c[1] < cx) ? 1 : 0
   endif
+  var offset = flags =~# 'e' ? p[index][2] - 1 : 0
   skipMark = 1
-  setpos('.', [0, p[index][0], p[index][1]])
+  setpos('.', [0, p[index][0], p[index][1] + offset])
   return true
-enddef
-
-export def JumpForward()
-  Jump('f')
-enddef
-
-export def JumpBack()
-  Jump('b')
 enddef
 
 export def ReturnCursor()
