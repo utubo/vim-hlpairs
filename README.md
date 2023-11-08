@@ -60,9 +60,9 @@ vim-hlpairs uses highlight group `MatchParen`.
 ## Functions
 
 - `hlpairs#Jump()` Jump to the far pair.
-
+- `hlpairs#JumpForward()` Jump forward to the pair.
+- `hlpairs#JumpBack()` Jump back to the pair.
 - `hlpairs#HiglihtOuter()`	Highlight the pair outside of the current pair.
-
 - `hlpairs#ReturnCursor()`	Return the cursor before `hlpairs#Jump()`.
 
 ## Author

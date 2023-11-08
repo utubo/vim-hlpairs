@@ -173,7 +173,7 @@ def OptionSet()
   var pairs = []
   const as_html = g:hlpairs.as_html->index(&filetype) !=# -1
   if as_html
-    pairs += [{ s: '\<[a-zA-Z0-9_:]\+="', e: '"', m: '', slen: 0, elen: 1, is_tag: false }]
+    pairs += [{ s: '\<[a-zA-Z0-9_:-]\+="', e: '"', m: '', slen: 0, elen: 1, is_tag: false }]
     pairs += [{ s: '<[a-zA-Z0-9_:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, is_tag: true }]
     pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, is_tag: false }]
   endif
@@ -211,21 +211,33 @@ def OptionSet()
   endif
 enddef
 
-export def Jump(): bool
-  var p = GetWindowValues(true).pos
+export def Jump(flag: string = ''): bool
+  const p = GetWindowValues(true).pos
   if !p
     return false
   endif
-  const cy = (p[0][0] + p[1][0]) / 2
-  const cx = (p[0][1] + p[1][1]) / 2
-  const c = getpos('.')[1 : 2]
-  skipMark = 1
-  if c[0] < cy || p[0][0] ==# p[1][0] && c[1] < cx
-    setpos('.', [0, p[1][0], p[1][1]])
+  var index = 0
+  if flag ==# 'f'
+    index = 1
+  elseif flag ==# 'b'
+    index = 0
   else
-    setpos('.', [0, p[0][0], p[0][1]])
+    const cy = (p[0][0] + p[1][0]) / 2
+    const cx = (p[0][1] + p[1][1]) / 2
+    const c = getpos('.')[1 : 2]
+    index = (c[0] < cy || p[0][0] ==# p[1][0] && c[1] < cx) ? 1 : 0
   endif
+  skipMark = 1
+  setpos('.', [0, p[index][0], p[index][1]])
   return true
+enddef
+
+export def JumpForward()
+  Jump('f')
+enddef
+
+export def JumpBack()
+  Jump('b')
 enddef
 
 export def ReturnCursor()
