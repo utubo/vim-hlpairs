@@ -121,8 +121,6 @@ def FindPairs(org: list<number>, nest: number = 0): any
     # searchpairpos() does not work the start-word ends with the end-word
     setpos('.', [0, spos[0], spos[1] + spos[2] - 1])
     epos = searchpos(e, 'nW', org[0] + g:hlpairs.limit, g:hlpairs.timeout)
-    g:aaa = spos
-    g:bbb = epos
   else
     epos = searchpairpos(
       s, '', e,
