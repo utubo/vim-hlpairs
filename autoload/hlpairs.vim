@@ -12,7 +12,14 @@ export def Init()
     filetype: {
       'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
       'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
-      'html,xml': '\<[a-zA-Z0-9_\:-]\+=":",<\([a-zA-Z0-9_\:]\+\)>\?:</\1>,<!--:-->',
+      'html,xml': {
+        matchpairs: [
+          '\<[a-zA-Z0-9_\:-]\+=":"',
+          '<\([a-zA-Z0-9_\:]\+\)>\?:</\1>',
+          '<!--:-->'
+        ],
+        ignores: '<:>'
+      },
       '*': '\w\@<!\w*(:)',
     },
     skip: {
@@ -172,17 +179,30 @@ def GetWindowValues(retry: bool = false): any
   return GetWindowValues()
 enddef
 
+def ToList(v: any): any
+  return type(v) ==# v:t_string ? v->split(',') : v
+enddef
+
 def OptionSet()
   var ftpairs = []
+  var ignores = []
   for [k, v] in g:hlpairs.filetype->items()
     if k->split(',')->index(&filetype) !=# -1
-      ftpairs += v->split(',')
+      if type(v) ==# v:t_dict
+        ftpairs += v.matchpairs->ToList()
+        ignores += get(v, 'ignores', '')->ToList()
+      else
+        ftpairs += v->ToList()
+      endif
     endif
   endfor
-  ftpairs += g:hlpairs.filetype['*']->split(',')
+  ftpairs += g:hlpairs.filetype['*']->ToList()
   ftpairs += &matchpairs->split(',')
   var pairs = []
   for sme in ftpairs
+    if ignores->index(sme) !=# -1
+      continue
+    endif
     const ary = sme->split('\\\@<!:')
     const start = ary[0]
     const middle = len(ary) ==# 3 ? ary[1] : ''

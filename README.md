@@ -33,7 +33,12 @@ nnoremap <Space>% <ScriptCmd>call hlpairs#ReturnCursor()<CR>
 - `skip` See `:help searchpair()`.
   You can set a string or a dictionary&lt;filetype: expr&gt;.
 - `filetype` The parentheses for file types.  
-  `*` is any filetype.
+  `*` is any filetype.  
+  Value is csv-string or list or dict.
+  You can set patterns for ignore with dict.
+  - `matchpairs` match pairs.
+  - `ignores` the patterns for ignore
+  See `:help &matchpairs`
 
 The default is
 ```vimscript
@@ -44,7 +49,14 @@ g:hlpairs = {
   filetype: {
     'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
     'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
-    'html,xml': '\<[a-zA-Z0-9_\:-]\+=":",<\([a-zA-Z0-9_\:]\+\)>\?:</\1>,<!--:-->',
+    'html,xml': {
+      matchpairs: [
+        '\<[a-zA-Z0-9_\:-]\+=":"',
+        '<\([a-zA-Z0-9_\:]\+\)>\?:</\1>',
+        '<!--:-->'
+      ],
+      ignores: '<:>'
+    },
     '*': '\w\@<!\w*(:)',
   },
   skip: {
