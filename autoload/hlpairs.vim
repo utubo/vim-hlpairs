@@ -120,13 +120,11 @@ def FindPairs(org: list<number>, nest: number = 0): any
   var s = pair.s
   var e = pair.e
   if pair.e_has_matchstr
-    e = e->substitute('\\[0-9]\+', (m) => {
-      const index = str2nr(m[0][1 :])
-      return start_matches[index]
-    }, 'g')
-    # TODO: ummm...
-    for m in start_matches[1 :]
-      s = s->substitute('\\(.*\\)', m, '')
+    # Replace `\1` for searchpairpos()
+    e = e->substitute('\\[1-9]', (m) => start_matches[str2nr(m[0][1])], 'g')
+    # Replace `\(...\)` for seachpairpos()
+    for m in start_matches[1 : count(s, '\(')]->reverse()
+      s = s->substitute('^\(.*\)\\([^)]*\\)', $'\1{m}', '')
     endfor
   endif
   # find the end
@@ -216,7 +214,7 @@ def OptionSet()
       e: end,
       slen: ConstantLength(start),
       elen: ConstantLength(end),
-      e_has_matchstr: (end =~# '\\[0-9]\+')
+      e_has_matchstr: (end =~# '\\[1-9]')
     }]
   endfor
   var start_regexs = []
