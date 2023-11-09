@@ -17,8 +17,10 @@ call dein#add('utubo/vim-hlpairs')
 # optional
 g:loaded_matchparen = 1
 autocmd VimEnter * nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
-nnoremap <Leader>% <ScriptCmd>call hlpairs#HighlightOuter()<CR>
-nnoremap <Space>% <ScriptCmd>call hlpairs#ReturnCursor()<CR>
+autocmd VimEnter * nnoremap ]% <Cmd>call hlpairs#Jump('f')<CR>
+autocmd VimEnter * nnoremap [% <Cmd>call hlpairs#Jump('b')<CR>
+nnoremap <Leader>% <Cmd>call hlpairs#HighlightOuter()<CR>
+nnoremap <Space>% <Cmd>call hlpairs#ReturnCursor()<CR>
 ```
 
 `nnoremap %` on VimEnter for override matchit.vim.
