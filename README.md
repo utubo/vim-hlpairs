@@ -12,8 +12,6 @@ Vim9script
 
 ```vim
 call dein#add('utubo/vim-hlpairs')
-
-
 # optional
 g:loaded_matchparen = 1
 g:loaded_matchit = 1
