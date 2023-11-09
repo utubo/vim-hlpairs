@@ -311,7 +311,7 @@ export def TextObjI(): list<any>
 enddef
 
 export def TextObjUserMap(key: string)
-  silent! call textobj#user#plugin('hlpairs', {
+  textobj#user#plugin('hlpairs', {
     '-': {
       'select-a': $'a{key}',
       'select-a-function': 'hlpairs#TextObjA',
