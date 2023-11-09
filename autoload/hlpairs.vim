@@ -34,6 +34,10 @@ export def Init()
     au OptionSet matchpairs call OptionSet()
     au WinNew,FileType * call OptionSet()
   augroup End
+
+  if !!g:hlpairs
+  endif
+
   g:hlpairs.initialized = 1
 enddef
 
@@ -271,5 +275,49 @@ export def HighlightOuter()
   setpos('.', [0, p[0][0], p[0][1] - 1])
   HighlightPair()
   setpos('.', c)
+enddef
+
+def TextObj(a: bool): list<any>
+  const p = GetWindowValues(true).pos
+  if !p
+    return []
+  endif
+  var [sy, sx, sl] = p[0]
+  var [ey, ex, el] = p[1]
+  if a
+    ex += el - 1
+  else
+    sx += sl
+    ex -= 1
+    if ex ==# 0
+      ey -= 1
+      ex = getline(ey)->len()
+    endif
+  endif
+  const c = getpos('.')
+  return [
+    'v',
+    [c[0], sy, sx, c[3]],
+    [c[0], ey, ex, c[3]],
+  ]
+enddef
+
+export def TextObjA(): list<any>
+  return TextObj(true)
+enddef
+
+export def TextObjI(): list<any>
+  return TextObj(false)
+enddef
+
+export def TextObjUserMap(key: string)
+  silent! call textobj#user#plugin('hlpairs', {
+    '-': {
+      'select-a': $'a{key}',
+      'select-a-function': 'hlpairs#TextObjA',
+      'select-i': $'i{key}',
+      'select-i-function': 'hlpairs#TextObjI',
+    },
+  })
 enddef
 
