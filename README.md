@@ -34,7 +34,7 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
   You can set a string or a dictionary&lt;filetype: expr&gt;.
 - `filetype` The parentheses for file types.  
   `*` is any filetype.  
-  Value is csv-string or list or dict.
+  The values are csv-string or list or dict.  
   You can set patterns for ignore with dict.
   - `matchpairs` match pairs.
   - `ignores` the patterns for ignore

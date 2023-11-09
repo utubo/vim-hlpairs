@@ -80,7 +80,7 @@ g:hlpairs					*g:hlpairs*
 				a dictionary<filetype: expr>
 		`filetype`	The parentheses for file types.
 				`*` is any filetype.
-				Value is csv-string or list or dict.
+				The value are csv-string or list or dict.
 				You can set patterns for ignore with dict.
 				`matchpairs` match pairs.
 				`ignores` the patterns for ignore
