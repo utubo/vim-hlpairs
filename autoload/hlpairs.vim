@@ -244,10 +244,10 @@ export def Jump(flags: string = ''): bool
   elseif flags =~# 'b'
     index = 0
   else
-    const cy = (p[0][0] + p[1][0]) / 2
-    const cx = (p[0][1] + p[1][1]) / 2
-    const c = getpos('.')[1 : 2]
-    index = (c[0] < cy || p[0][0] ==# p[1][0] && c[1] < cx) ? 1 : 0
+    const cy = (p[0][0] + p[1][0]) / 2.0
+    const cx = (p[0][1] + p[1][1]) / 2.0
+    const [y, x] = getpos('.')[1 : 2]
+    index = (y < cy || y ==# cy && x < cx) ? 1 : 0
   endif
   var offset = flags =~# 'e' ? p[index][2] - 1 : 0
   skip_mark = 1
