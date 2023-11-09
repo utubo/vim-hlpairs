@@ -157,6 +157,7 @@ def FindPairs(org: list<number>, nest: number = 0): any
   elseif g:hlpairs.limit < nest
     return []
   else
+    # when find start-end at before cursor.
     if text->len() <= idx
       setpos('.', [0, spos[0] - 1, getline(spos[0] - 1)->len()])
     else
@@ -164,10 +165,6 @@ def FindPairs(org: list<number>, nest: number = 0): any
     endif
     return FindPairs(org, nest + 1)
   endif
-enddef
-
-def ConstantLength(s: string): number
-  return s->stridx('*') ==# -1 && s->stridx('\') ==# -1 ? len(s) : 0
 enddef
 
 def GetWindowValues(retry: bool = false): any
@@ -186,6 +183,10 @@ enddef
 
 def ToList(v: any): any
   return type(v) ==# v:t_string ? v->split(',') : v
+enddef
+
+def ConstantLength(s: string): number
+  return s->stridx('*') ==# -1 && s->stridx('\') ==# -1 ? len(s) : 0
 enddef
 
 def OptionSet()
