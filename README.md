@@ -34,7 +34,6 @@ nnoremap <Space>% <ScriptCmd>call hlpairs#ReturnCursor()<CR>
   You can set a string or a dictionary&lt;filetype: expr&gt;.
 - `filetype` The parentheses for file types.  
   `*` is any filetype.
-- `as_html` The filetypes that highlight as HTML.
 
 The default is
 ```vimscript
@@ -45,12 +44,12 @@ g:hlpairs = {
   filetype: {
     'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
     'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
+    'html,xml': '\<[a-zA-Z0-9_\:-]\+=":",<\([a-zA-Z0-9_\:]\+\)>\?:</\1>,<!--:-->',
     '*': '\w\@<!\w*(:)',
   },
   skip: {
     'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
-  },
-  as_html: ['html', 'xml']
+  }
 }
 ```
 

@@ -1,7 +1,7 @@
 vim9script
 
 var mark = [] # origin cursorpos
-var skipMark = 0
+var skip_mark = 0
 
 export def Init()
   const override = get(g:, 'hlpairs', {})
@@ -12,12 +12,12 @@ export def Init()
     filetype: {
       'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
       'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
+      'html,xml': '\<[a-zA-Z0-9_\:-]\+=":",<\([a-zA-Z0-9_\:]\+\)>\?:</\1>,<!--:-->',
       '*': '\w\@<!\w*(:)',
     },
     skip: {
       'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
     },
-    as_html: ['html', 'xml']
   }
   g:hlpairs->extend(override)
   OptionSet()
@@ -49,8 +49,8 @@ def HighlightPair(t: any = 0)
       return
     endif
     const cur = getpos('.')
-    if skipMark
-      skipMark -= 1
+    if skip_mark
+      skip_mark -= 1
     else
       mark = cur[:]
     endif
@@ -89,6 +89,7 @@ def FindPairs(org: list<number>, nest: number = 0): any
   var pair = {}
   var text = getline(spos[0])
   var idx = spos[1] - 1
+  var start_matches = []
   var start_str = ''
   var slen = 0
   for p in w:hlpairs.pairs
@@ -97,7 +98,8 @@ def FindPairs(org: list<number>, nest: number = 0): any
     endif
     pair = p
     if !pair.slen
-      start_str = matchstr(text, pair.s, idx)
+      start_matches = matchlist(text, pair.s, idx)
+      start_str = start_matches[0]
       slen = start_str->len()
     else
       start_str = pair.s
@@ -111,9 +113,11 @@ def FindPairs(org: list<number>, nest: number = 0): any
   endif
   var s = pair.s
   var e = pair.e
-  if pair.is_tag
-    s = start_str
-    e = '</' .. start_str[1 : ]->substitute('>\?$', '>\\?', '')
+  if pair.e_has_matchstr
+    e = e->substitute('\\[0-9]\+', (m) => {
+      const index = str2nr(m[0][1 :])
+      return start_matches[index]
+    }, 'g')
   endif
   # find the end
   var epos = []
@@ -158,7 +162,6 @@ def GetWindowValues(retry: bool = false): any
   var w = get(w:, 'hlpairs', {
     matchid: 0,
     pos: [],
-    ft: '',
     pairs: [],
     start_regex: '',
   })
@@ -170,19 +173,17 @@ def GetWindowValues(retry: bool = false): any
 enddef
 
 def OptionSet()
-  var pairs = []
-  const as_html = g:hlpairs.as_html->index(&filetype) !=# -1
-  if as_html
-    pairs += [{ s: '\<[a-zA-Z0-9_:-]\+="', e: '"', m: '', slen: 0, elen: 1, is_tag: false }]
-    pairs += [{ s: '<[a-zA-Z0-9_:]\+>\?', e: '</>', m: '', slen: 0, elen: 0, is_tag: true }]
-    pairs += [{ s: '<!--', e: '-->', m: '', slen: 4, elen: 3, is_tag: false }]
-  endif
-  const ftpairs = get(g:hlpairs.filetype, &filetype, '')
-  for sme in ftpairs->split(',') + g:hlpairs.filetype['*']->split(',') + &matchpairs->split(',')
-    if as_html && sme ==# '<:>'
-      continue
+  var ftpairs = []
+  for [k, v] in g:hlpairs.filetype->items()
+    if k->split(',')->index(&filetype) !=# -1
+      ftpairs += v->split(',')
     endif
-    const ary = sme->split(':')
+  endfor
+  ftpairs += g:hlpairs.filetype['*']->split(',')
+  ftpairs += &matchpairs->split(',')
+  var pairs = []
+  for sme in ftpairs
+    const ary = sme->split('\\\@<!:')
     const start = ary[0]
     const middle = len(ary) ==# 3 ? ary[1] : ''
     const end = ary[-1]
@@ -192,7 +193,7 @@ def OptionSet()
       e: end,
       slen: ConstantLength(start),
       elen: ConstantLength(end),
-      is_tag: false
+      e_has_matchstr: (end =~# '\\[0-9]\+')
     }]
   endfor
   var start_regexs = []
@@ -228,7 +229,7 @@ export def Jump(flags: string = ''): bool
     index = (c[0] < cy || p[0][0] ==# p[1][0] && c[1] < cx) ? 1 : 0
   endif
   var offset = flags =~# 'e' ? p[index][2] - 1 : 0
-  skipMark = 1
+  skip_mark = 1
   setpos('.', [0, p[index][0], p[index][1] + offset])
   return true
 enddef
@@ -245,7 +246,7 @@ export def HighlightOuter()
     return
   endif
   const c = getcurpos()
-  skipMark = 1
+  skip_mark = 1
   setpos('.', [0, p[0][0], p[0][1] - 1])
   HighlightPair()
   setpos('.', c)
