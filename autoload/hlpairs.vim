@@ -97,7 +97,7 @@ def FindPairs(org: list<number>, nest: number = 0): any
   var text = getline(spos[0])
   var idx = spos[1] - 1
   var start_matches = []
-  var start_str = ''
+  var s = ''
   var slen = 0
   for p in w:hlpairs.pairs
     if match(text, p.s, idx) !=# idx
@@ -106,10 +106,10 @@ def FindPairs(org: list<number>, nest: number = 0): any
     pair = p
     if !pair.slen
       start_matches = matchlist(text, pair.s, idx)
-      start_str = start_matches[0]
-      slen = start_str->len()
+      s = start_matches[0]
+      slen = s->len()
     else
-      start_str = pair.s
+      s = pair.s
       slen = pair.slen
     endif
     spos += [slen]
@@ -118,7 +118,6 @@ def FindPairs(org: list<number>, nest: number = 0): any
   if !pair
     return []
   endif
-  var s = pair.s
   var e = pair.e
   if pair.e_has_matchstr
     e = e->substitute('\\[0-9]\+', (m) => {
@@ -128,7 +127,7 @@ def FindPairs(org: list<number>, nest: number = 0): any
   endif
   # find the end
   var epos = []
-  if !!pair.elen && e ==# start_str[slen - pair.elen :]
+  if e ==# s[slen - pair.elen :]
     # searchpairpos() does not work the start-word ends with the end-word,
     # so search end-word after start-word.
     e = $'\(\%{spos[0]}l\%{spos[1] + spos[2]}c.*\)\@<={e}\|\%{spos[0] + 1}l\@<={e}'
