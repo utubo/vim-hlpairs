@@ -39,10 +39,9 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
   - `matchpairs` match pairs.  
   - `ignores` the patterns for ignore
 
-  See `:help mps`  
   You can use `\1` in the end or pair,
   but it won't work perfectly, so use `\V`.  
-  See `:help \\V`
+  See `:help mps`, See `:help \\V`
 
 The default is
 ```vimscript
