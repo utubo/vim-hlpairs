@@ -75,9 +75,9 @@ g:hlpairs					*g:hlpairs*
 		`timeout` 	The search stops when more than this many
 				millisecond shave passed.
 		`limit` 	Limit number of lines to search.
-		`skip` 		See `:help searchpair()`
-				You can set a string or
+		`skip` 		You can set a string or
 				a dictionary<filetype: expr>
+		 		See `:help searchpair()`
 		`filetype`	The parentheses for file types.
 				`*` is any filetype.
 				The value are csv-string or list or dict.
@@ -86,7 +86,7 @@ g:hlpairs					*g:hlpairs*
 					`ignores`: the patterns for ignore
 				You can use `\1` in the end or pair,
 				but it won't work perfectly, so use `\V`.
-				See `:help mps`, See `:help \\V`
+				See `:help mps`, `:help \\V`
 
 	The default is
 >
