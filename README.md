@@ -30,7 +30,7 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
 - `delay` The delay milliseconds to highlight.
 - `timeout` The search stops when more than this many milliseconds have passed.
 - `limit` Limit number of lines to search.
-- `skip` You can set a string or a dictionary&lt;filetype: expr&gt;.  
+- `skip` You can set a string or a dict&lt;filetype: expr&gt;.  
   See `:help searchpair()`.
 - `filetype` The parentheses for file types.  
   `*` is any filetype.  
