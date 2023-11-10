@@ -125,10 +125,10 @@ def FindPairs(org: list<number>, nest: number = 0): any
   var e = pair.e
   if pair.e_has_matchstr
     # Replace `\1` for searchpairpos()
-    e = e->substitute('\\[1-9]', (m) => start_matches[str2nr(m[0][1])], 'g')
+    e = e->substitute('\\[1-9]', (m) => start_matches[str2nr(m[0][1])]->escape('\'), 'g')
     # Replace `\(...\)` for seachpairpos()
     for m in start_matches[1 : count(s, '\(')]->reverse()
-      s = s->substitute('^\(.*\)\\([^)]*\\)', $'\1{m}', '')
+      s = s->substitute('^\(.*\)\\([^)]*\\)', $'\1{m->escape('\')}', '')
     endfor
   endif
   # find the end
