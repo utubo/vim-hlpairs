@@ -35,12 +35,13 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
 - `filetype` The parentheses for file types.  
   `*` is any filetype.  
   The values are csv-string or list or dict.  
-  You can set patterns for ignore with dict.
-  - `matchpairs` match pairs.
+  You can set patterns for ignore with dict.  
+  - `matchpairs` match pairs.  
   - `ignores` the patterns for ignore
-  See `:help mps`
+
+  See `:help mps`  
   You can use `\1` in the end or pair,
-  but it won't work perfectly, so use `\V`.
+  but it won't work perfectly, so use `\V`.  
   See `:help \\V`
 
 The default is
