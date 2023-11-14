@@ -10,7 +10,7 @@ export def Init()
     timeout: 20,
     limit: 50,
     filetype: {
-      'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
+      'vim': '\<if\>:else:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
       'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
       'html,xml': {
         matchpairs: [
