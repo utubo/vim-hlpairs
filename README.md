@@ -79,8 +79,7 @@ vim-hlpairs uses highlight group `MatchParen`.
   - 'f': Jump forward instead of the far pair
   - 'b': Jump backward instead of the far pair
   - 'e': Jump to the End of the match
-- `hlpairs#TextObj({around})` Select text object.  
-  You can map to `onoremap`.
+- `hlpairs#TextObj({around})` Select text object. You can map to `onoremap`.
 - `hlpairs#HiglihtOuter()` Highlight the pair outside of the current pair.
 - `hlpairs#ReturnCursor()` Return the cursor before `hlpairs#Jump()`.
 
