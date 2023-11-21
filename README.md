@@ -18,9 +18,10 @@ g:loaded_matchit = 1
 nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
 nnoremap ]% <Cmd>call hlpairs#Jump('f')<CR>
 nnoremap [% <Cmd>call hlpairs#Jump('b')<CR>
+onoremap a% <ScriptCmd>hlpairs#TextObj(true)<CR>
+onoremap i% <ScriptCmd>hlpairs#TextObj(false)<CR>
 nnoremap <Leader>% <Cmd>call hlpairs#HighlightOuter()<CR>
 nnoremap <Space>% <Cmd>call hlpairs#ReturnCursor()<CR>
-autocmd VimEnter * hlpairs#TextObjUserMap('%')
 ```
 
 ## Configuration
@@ -78,9 +79,14 @@ vim-hlpairs uses highlight group `MatchParen`.
   - 'f': Jump forward instead of the far pair
   - 'b': Jump backward instead of the far pair
   - 'e': Jump to the End of the match
+- `hlpairs#TextObj({around})` Select text object.  
+  You can map to `onoremap`.
 - `hlpairs#HiglihtOuter()` Highlight the pair outside of the current pair.
 - `hlpairs#ReturnCursor()` Return the cursor before `hlpairs#Jump()`.
-- `hlpairs#TextObjUserMap({key})` Call `textobj#user#map()` to mapping to $'a{key}' and $'i{key}'.
+
+## Deprecated
+
+- `hlpairs#TextObjUserMap({key})` Mapping to $'a{key}' and $'i{key}'.
 
 ## Author
 utubo (https://github.com/utubo)
