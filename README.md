@@ -86,7 +86,7 @@ vim-hlpairs uses highlight group `MatchParen`.
 
 ## Deprecated
 
-- `hlpairs#TextObjUserMap({key})` Mapping to `$'a{key}'` and `$'i{key}'`.
+- `hlpairs#TextObjUserMap({key})` onoremap to `$'a{key}'` and `$'i{key}'` for text object.
 
 ## Author
 utubo (https://github.com/utubo)
