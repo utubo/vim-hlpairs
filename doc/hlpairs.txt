@@ -151,8 +151,7 @@ FUNCTIONS					*hlpairs-functions*
 ------------------------------------------------------------------------------
 DEPRECATED					*hlpairs-depracated*
 
-`hlpairs#TextObjUserMap({key})`	onoremap to `$'a{key}'` and `$'i{key}'` for
-				text object.
+`hlpairs#TextObjUserMap({key})`	Mapping to $'a{key}' and $'i{key}'.
 
 
 ==============================================================================
