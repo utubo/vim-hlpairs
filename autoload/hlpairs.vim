@@ -278,10 +278,10 @@ export def HighlightOuter()
   setpos('.', c)
 enddef
 
-export def TextObj(a: bool)
+def TextObj(a: bool): list<any>
   const p = GetWindowValues(true).pos
   if !p
-    return
+    return []
   endif
   var [sy, sx, sl] = p[0]
   var [ey, ex, el] = p[1]
@@ -296,14 +296,29 @@ export def TextObj(a: bool)
     endif
   endif
   const c = getpos('.')
-  setpos('.', [c[0], sy, sx, c[3]])
-  normal! v
-  setpos('.', [c[0], ey, ex, c[3]])
+  return [
+    'v',
+    [c[0], sy, sx, c[3]],
+    [c[0], ey, ex, c[3]],
+  ]
 enddef
 
-# deprecated
+export def TextObjA(): list<any>
+  return TextObj(true)
+enddef
+
+export def TextObjI(): list<any>
+  return TextObj(false)
+enddef
+
 export def TextObjUserMap(key: string)
-  execute $'onoremap a{key} <ScriptCmd>hlpairs#TextObj(true)<CR>'
-  execute $'onoremap i{key} <ScriptCmd>hlpairs#TextObj(false)<CR>'
+  textobj#user#plugin('hlpairs', {
+    '-': {
+      'select-a': $'a{key}',
+      'select-a-function': 'hlpairs#TextObjA',
+      'select-i': $'i{key}',
+      'select-i-function': 'hlpairs#TextObjI',
+    },
+  })
 enddef
 

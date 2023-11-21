@@ -30,7 +30,6 @@ INTERFACE			|hlpairs-interface|
   VARIABLES			  |hlpairs-variables|
   COLORS			  |hlpairs-colors|
   FUNCTIONS			  |hlpairs-functions|
-  DEPRECATED			  |hlpairs-deprecated|
 
 
 ==============================================================================
@@ -52,19 +51,16 @@ Installation
 
 	Example of `.vimrc`
 >
-	vim9script
-
-	dein#add('utubo/vim-hlpairs')
+	call dein#add('utubo/vim-hlpairs')
 	# optional
 	g:loaded_matchparen = 1
 	g:loaded_matchit = 1
-	nnoremap % <ScriptCmd>hlpairs#Jump()<CR>
-	nnoremap ]% <ScriptCmd>hlpairs#Jump('f')<CR>
-	nnoremap [% <ScriptCmd>hlpairs#Jump('b')<CR>
-	onoremap a% <ScriptCmd>hlpairs#TextObj(true)<CR>
-	onoremap i% <ScriptCmd>hlpairs#TextObj(false)<CR>
-	nnoremap <Leader>% <ScriptCmd>hlpairs#HighlightOuter()<CR>
-	nnoremap <Space>% <ScriptCmd>hlpairs#ReturnCursor()<CR>
+	nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
+	nnoremap ]% <Cmd>call hlpairs#Jump('f')<CR>
+	nnoremap [% <Cmd>call hlpairs#Jump('b')<CR>
+	nnoremap <Leader>% <Cmd>call hlpairs#HighlightOuter()<CR>
+	nnoremap <Space>% <Cmd>call hlpairs#ReturnCursor()<CR>
+	autocmd VimEnter * hlpairs#TextObjUserMap('%')
 
 ==============================================================================
 INTERFACE					*hlpairs-interface*
@@ -141,18 +137,8 @@ FUNCTIONS					*hlpairs-functions*
 
 `hlpairs#ReturnCursor()`	Return the cursor before `hlpairs#Jump()`.
 
-`hlpairs#TextObj({around})`	Select text object.
-				You can map to `onoremap`.
-
-`hlpairs#DefaultMap({key})`	`{key}` is string. The default is `%`
-				This is a syntax suger of
-
-
-------------------------------------------------------------------------------
-DEPRECATED					*hlpairs-depracated*
-
-`hlpairs#TextObjUserMap({key})`	Mapping to $'a{key}' and $'i{key}'.
-
+`hlpairs#TextObjUserMap({key})`	Call `textobj#user#map()` to mapping to
+				$'a{key}' and $'i{key}'.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:
