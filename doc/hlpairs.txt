@@ -91,13 +91,13 @@ g:hlpairs					*g:hlpairs*
 	The default is
 >
 	g:hlpairs = {
-	  delay: 200,
+	  delay: 150,
 	  timeout: 20,
 	  limit: 50,
 	  filetype: {
 	    'vim': '\<if\>:else:endif,for:endfor,while:endwhile,'
 	        .. 'function:endfunction,\<def\>:enddef,\<try\>:endtry',
-	    'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
+	    'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\)\>:\<end\>',
 	    'html,xml': {
 	      matchpairs: [
 	        '\<[a-zA-Z0-9_\:-]\+=":"',
@@ -123,15 +123,15 @@ vim-hlpairs uses highlight group `MatchParen`.
 ------------------------------------------------------------------------------
 FUNCTIONS					*hlpairs-functions*
 
-`hlpairs#Jump([{flags}])`	Jump to the far pair.
+`hlpairs#Jump([{flags}])`	Jump to the next paren.
 				{flags} is a String.
-				'f'	Jump forward instead of the far pair
-				'b'	Jump backward instead of the far pair
+				'f'	Jump to the next paren.
+				'b'	Jump to the previous paren.
 				'e'	Jump to the end of the match
 
-`hlpairs#JumpForward()`		Jump forward to the pair.
+`hlpairs#JumpForward()`		Jump to the next paren.
 
-`hlpairs#JumpBack()`		Jump back to the pair.
+`hlpairs#JumpBack()`		Jump to the previous paren.
 
 `hlpairs#HiglihtOuter()`	Highlight the pair outside of the current pair.
 

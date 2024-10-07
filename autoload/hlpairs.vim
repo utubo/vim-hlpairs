@@ -10,8 +10,8 @@ export def Init()
     timeout: 20,
     limit: 50,
     filetype: {
-      'vim': '\<if\>:else:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
-      'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
+    'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
+      'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\)\>:\<end\>',
       'html,xml': {
         matchpairs: [
           '\<[a-zA-Z0-9_\:-]\+=":"',
@@ -34,10 +34,6 @@ export def Init()
     au OptionSet matchpairs call OptionSet()
     au WinNew,FileType * call OptionSet()
   augroup End
-
-  if !!g:hlpairs
-  endif
-
   g:hlpairs.initialized = 1
 enddef
 
@@ -65,8 +61,7 @@ def HighlightPair(t: any = 0)
     else
       mark = cur[:]
     endif
-    const new_pos = FindPairs(cur[1 : 2])
-    setpos('.', cur)
+    const new_pos = FindPairs(cur)
     if w:hlpairs.pos ==# new_pos
       # nothing update
       return
@@ -84,27 +79,51 @@ def HighlightPair(t: any = 0)
   endtry
 enddef
 
-def FindPairs(org: list<number>, nest: number = 0): any
+def ReplaceMatchGroup(s: string, g: list<string>): string
+  return s->substitute('\\[1-9]', (m) => g[str2nr(m[0][1]) - 1]->escape('\'), 'g')
+enddef
+
+def FindPairs(cur: list<number>): any
   # find the start
-  var spos = searchpos(
+  const b = bufnr()
+  const cur_lnum = cur[1]
+  const cur_byteidx = cur[2] - 1
+  var starts = matchbufline(
+    b,
     w:hlpairs.start_regex,
-    'cbW',
-    max([0, line('.') - g:hlpairs.limit]),
-    g:hlpairs.timeout,
-    w:hlpairs.skip
+    max([1, cur_lnum - g:hlpairs.limit]),
+    cur_lnum,
+    { submatches: true }
   )
-  if spos[0] ==# 0
+  if starts ==# []
     return []
   endif
+  # find the end
+  for s in starts->reverse()
+    if cur_lnum ==# s.lnum && cur_byteidx < s.byteidx
+      continue
+    endif
+    var pos_list = FindEnd(b, s)
+    if pos_list ==# []
+      continue
+    endif
+    const e = pos_list[-1]
+    if cur[1] < e[0] || cur[1] ==# e[0] && cur[2] <= e[1] + e[2]
+      return pos_list
+    endif
+  endfor
+  return []
+enddef
+
+def ToPosItem(s: any): any
+  return [s.lnum, s.byteidx + 1, s.text->len()]
+enddef
+
+def FindEnd(b: number, s: dict<any>): any
   # get the pair of start
   var pair = {}
-  var text = getline(spos[0])
-  var idx = spos[1] - 1
-  var start_matches = []
-  var start_str = ''
-  var slen = 0
   for p in w:hlpairs.pairs
-    if match(text, p.s, idx) !=# idx
+    if s.text !~# p.s
       continue
     endif
     pair = p
@@ -112,59 +131,55 @@ def FindPairs(org: list<number>, nest: number = 0): any
   if !pair
     return []
   endif
-  if !pair.slen
-    start_matches = matchlist(text, pair.s, idx)
-    start_str = start_matches[0]
-    slen = start_str->len()
-  else
-    start_str = pair.s
-    slen = pair.slen
-  endif
-  spos += [slen]
-  var s = pair.s
-  var e = pair.e
-  if pair.e_has_matchstr
-    # Replace `\1` for searchpairpos()
-    e = e->substitute('\\[1-9]', (m) => start_matches[str2nr(m[0][1])]->escape('\'), 'g')
-    # Replace `\(...\)` for seachpairpos()
-    for m in start_matches[1 : count(s, '\(')]->reverse()
-      s = s->substitute('^\(.*\)\\([^)]*\\)', $'\1{m->escape('\')}', '')
-    endfor
-  endif
-  # find the end
-  var epos = []
-  if e ==# start_str[slen - pair.elen :]
-    # searchpairpos() does not work the start-word ends with the end-word,
-    # so search end-word after start-word.
-    e = $'\(\%{spos[0]}l\%{spos[1] + spos[2]}c.*\)\@<={e}\|\%{spos[0] + 1}l\@<={e}'
-  endif
-  epos = searchpairpos(
-    s, '', e,
-    'nW',
-    w:hlpairs.skip,
-    org[0] + g:hlpairs.limit,
-    g:hlpairs.timeout
-  )
-  text = getline(epos[0])
-  idx = epos[1] - 1
-  if epos[0] !=# 0 && !pair.elen
-    epos += [matchstr(text, e, idx)->len()]
-  else
-    epos += [pair.elen]
-  endif
-  if org[0] < epos[0] || org[0] ==# epos[0] && org[1] <= idx + epos[2]
-    return [spos, epos]
-  elseif g:hlpairs.limit < nest
-    return []
-  else
-    # when find start-end at before cursor.
-    if text->len() <= idx
-      setpos('.', [0, spos[0] - 1, getline(spos[0] - 1)->len()])
-    else
-      setpos('.', [0, spos[0], spos[1] - 1])
+  var s_regex = pair.s
+  var e_regex = pair.e
+  var m_regex = pair.m
+  const has_m = pair.has_m
+  if pair.has_matchstr
+    s_regex = s.text->escape('.\*\')
+    e_regex = ReplaceMatchGroup(pair.e, s.submatches)
+    if has_m
+      m_regex = ReplaceMatchGroup(pair.m, s.submatches)
     endif
-    return FindPairs(org, nest + 1)
   endif
+  # find middles and the end
+  const matches = matchbufline(
+    b,
+    s_regex .. '\|' .. e_regex .. (has_m ? $'\|{m_regex}' : ''),
+    s.lnum,
+    line('.') + g:hlpairs.limit,
+  )
+  if matches ==# []
+    return []
+  endif
+  var pos_list = [ToPosItem(s)]
+  var level = 0
+  const min_col = s.byteidx + s.text->len()
+  for ma in matches
+    if ma.lnum ==# s.lnum && ma.byteidx < min_col
+      continue
+    endif
+    if ma.text =~ e_regex
+      if !level
+        pos_list += [ToPosItem(ma)]
+        return pos_list
+      else
+        level -= 1
+        continue
+      endif
+    endif
+    if ma.text =~ s_regex
+      level += 1
+      continue
+    endif
+    if !!level
+      continue
+    endif
+    if !!has_m && ma.text =~ m_regex
+      pos_list += [ToPosItem(ma)]
+    endif
+  endfor
+  return []
 enddef
 
 def GetWindowValues(retry: bool = false): any
@@ -217,9 +232,8 @@ def OptionSet()
       s: start ==# '[' ? '\[' : start,
       m: middle,
       e: end,
-      slen: ConstantLength(start),
-      elen: ConstantLength(end),
-      e_has_matchstr: (end =~# '\\[1-9]')
+      has_matchstr: (end =~# '\\[1-9]') || (middle =~# '\\[1-9]'),
+      has_m: middle !=# ''
     }]
   endfor
   var start_regexs = []
@@ -239,24 +253,32 @@ def OptionSet()
 enddef
 
 export def Jump(flags: string = ''): bool
-  const p = GetWindowValues(true).pos
-  if !p
+  const pos_list = GetWindowValues(true).pos
+  if !pos_list
     return false
   endif
   var index = 0
-  if flags =~# 'f'
-    index = 1
-  elseif flags =~# 'b'
-    index = 0
+  const cur = getpos('.')
+  if flags =~# 'b'
+    for i in range(1, pos_list->len())
+      const p = pos_list[pos_list->len() - i]
+      if cur[1] > p[0] || cur[1] ==# p[0] && cur[2] >= p[1]
+        break
+      endif
+      index -= 1
+    endfor
   else
-    const cy = (p[0][0] + p[1][0]) / 2.0
-    const cx = (p[0][1] + p[1][1]) / 2.0
-    const [y, x] = getpos('.')[1 : 2]
-    index = (y < cy || y ==# cy && x < cx) ? 1 : 0
+    for p in pos_list
+      if cur[1] < p[0] || cur[1] ==# p[0] && cur[2] < p[1]
+        break
+      endif
+      index += 1
+    endfor
   endif
-  var offset = flags =~# 'e' ? p[index][2] - 1 : 0
+  index = (index + pos_list->len()) % pos_list->len()
+  const offset = flags =~# 'e' ? pos_list[index][2] - 1 : 0
   skip_mark = 1
-  setpos('.', [0, p[index][0], p[index][1] + offset])
+  setpos('.', [0, pos_list[index][0], pos_list[index][1] + offset])
   return true
 enddef
 

@@ -46,12 +46,12 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
 The default is
 ```vimscript
 g:hlpairs = {
-  delay: 200,
+  delay: 150,
   timeout: 20,
   limit: 50,
   filetype: {
-    'vim': '\<if\>:else:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
-    'ruby': '\<\(def\|do\|class\|if\)\>:\<end\>',
+    'vim': '\<if\>:else\(if\)\?:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
+    'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\)\>:\<end\>',
     'html,xml': {
       matchpairs: [
         '\<[a-zA-Z0-9_\:-]\+=":"',
@@ -73,11 +73,11 @@ vim-hlpairs uses highlight group `MatchParen`.
 
 ## Functions
 
-- `hlpairs#Jump([{flags}])` Jump to the far pair.
+- `hlpairs#Jump([{flags}])` Jump to the next paren.
   - {flags} is a String.
-  - 'f': Jump forward instead of the far pair
-  - 'b': Jump backward instead of the far pair
-  - 'e': Jump to the end of the match
+  - 'f': Jump the next paren.
+  - 'b': Jump the previous paren.
+  - 'e': Jump to the end of the match.
 - `hlpairs#HiglihtOuter()` Highlight the pair outside of the current pair.
 - `hlpairs#ReturnCursor()` Return the cursor before `hlpairs#Jump()`.
 - `hlpairs#TextObjUserMap({key})` Call `textobj#user#map()` to mapping to $'a{key}' and $'i{key}'.
