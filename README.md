@@ -28,7 +28,6 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
 ### `g:hlpairs`
 
 - `delay` The delay milliseconds to highlight.
-- `timeout` The search stops when more than this many milliseconds have passed.
 - `limit` Limit number of lines to search.
 - `skip` You can set a string or a dict&lt;filetype: expr&gt;.  
   See `:help searchpair()`.
@@ -47,7 +46,6 @@ The default is
 ```vimscript
 g:hlpairs = {
   delay: 150,
-  timeout: 20,
   limit: 50,
   filetype: {
     'vim': '\<if\>:else\(if\)\?:endif,for:endfor,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',

@@ -7,7 +7,6 @@ export def Init()
   const override = get(g:, 'hlpairs', {})
   g:hlpairs = {
     delay: 200,
-    timeout: 20,
     limit: 50,
     filetype: {
     'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',

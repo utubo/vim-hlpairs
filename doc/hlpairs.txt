@@ -72,8 +72,6 @@ g:hlpairs					*g:hlpairs*
 	`g:hlpairs` is dictionaly.
 
 		`delay` 	The delay milliseconds to highlight.
-		`timeout` 	The search stops when more than this many
-				millisecond shave passed.
 		`limit` 	Limit number of lines to search.
 		`skip` 		You can set a string or
 				a dict<filetype: expr>
@@ -92,7 +90,6 @@ g:hlpairs					*g:hlpairs*
 >
 	g:hlpairs = {
 	  delay: 150,
-	  timeout: 20,
 	  limit: 50,
 	  filetype: {
 	    'vim': '\<if\>:else:endif,for:endfor,while:endwhile,'
