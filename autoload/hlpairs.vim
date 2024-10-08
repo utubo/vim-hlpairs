@@ -2,6 +2,7 @@ vim9script
 
 var mark = [] # origin cursorpos
 var skip_mark = 0
+const search_lines = 5
 
 export def Init()
   const override = get(g:, 'hlpairs', {})
@@ -60,7 +61,9 @@ def HighlightPair(t: any = 0)
     else
       mark = cur[:]
     endif
+    # const start_time = reltime()
     const new_pos = FindPairs(cur)
+    # g:hlpairs.reltimestr = reltimestr(reltime(start_time))
     if w:hlpairs.pos ==# new_pos
       # nothing update
       return
@@ -83,40 +86,43 @@ def ReplaceMatchGroup(s: string, g: list<string>): string
 enddef
 
 def FindPairs(cur: list<number>): any
-  # find the start
+  # setup properties
   const b = bufnr()
   const cur_lnum = cur[1]
   const cur_byteidx = cur[2] - 1
-  var starts = matchbufline(
-    b,
-    b:hlpairs.start_regex,
-    max([1, cur_lnum - g:hlpairs.limit]),
-    cur_lnum,
-    { submatches: true }
-  )
-  if starts ==# []
-    return []
-  endif
-  # find the end
-  const max_lnum = cur[1] + g:hlpairs.limit
-  var pairs_cache = {}
-  for s in starts->reverse()
-    if cur_lnum ==# s.lnum && cur_byteidx < s.byteidx
-      continue
-    endif
-    var pair = GetPair(s.text, pairs_cache)
-    if !pair
-      return []
-    endif
-    var pos_list = FindEnd(b, max_lnum, s, pair)
-    if pos_list ==# []
-      continue
-    endif
-    const e = pos_list[-1]
-    if cur[1] < e[0] || cur[1] ==# e[0] && cur[2] <= e[1] + e[2]
-      return pos_list
-    endif
-  endfor
+  const min_lnum = max([1, cur_lnum - g:hlpairs.limit])
+  const max_lnum = cur_lnum + g:hlpairs.limit
+  # find the start
+  var offset = cur_lnum
+  while min_lnum <= offset
+    var starts = matchbufline(
+      b,
+      b:hlpairs.start_regex,
+      max([1, offset - search_lines + 1]),
+      offset,
+      { submatches: true }
+    )
+    offset -= search_lines
+    # find the end
+    var pairs_cache = {}
+    for s in starts->reverse()
+      if cur_lnum ==# s.lnum && cur_byteidx < s.byteidx
+        continue
+      endif
+      var pair = GetPair(s.text, pairs_cache)
+      if !pair
+        break
+      endif
+      var pos_list = FindEnd(b, max_lnum, s, pair)
+      if pos_list ==# []
+        continue
+      endif
+      const e = pos_list[-1]
+      if cur[1] < e[0] || cur[1] ==# e[0] && cur[2] <= e[1] + e[2]
+        return pos_list
+      endif
+    endfor
+  endwhile
   return []
 enddef
 
@@ -139,6 +145,8 @@ def ToPosItem(s: any): any
 enddef
 
 def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>): any
+  # setup properties
+  const byteidx = s.byteidx + s.text->len()
   var s_regex = pair.s
   var e_regex = pair.e
   var m_regex = pair.m
@@ -150,42 +158,43 @@ def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>): any
       m_regex = ReplaceMatchGroup(pair.m, s.submatches)
     endif
   endif
-  const matches = matchbufline(
-    b,
-    s_regex .. '\|' .. e_regex .. (has_m ? $'\|{m_regex}' : ''),
-    s.lnum,
-    max_lnum,
-  )
-  if matches ==# []
-    return []
-  endif
+  # find the end
   var pos_list = [ToPosItem(s)]
-  var level = 0
-  const min_col = s.byteidx + s.text->len()
-  for ma in matches
-    if ma.lnum ==# s.lnum && ma.byteidx < min_col
-      continue
-    endif
-    if ma.text =~ e_regex
-      if !level
-        pos_list += [ToPosItem(ma)]
-        return pos_list
-      else
-        level -= 1
+  var nest = 0
+  var offset = s.lnum
+  while offset <= max_lnum
+    const matches = matchbufline(
+      b,
+      s_regex .. '\|' .. e_regex .. (has_m ? $'\|{m_regex}' : ''),
+      offset,
+      offset + search_lines - 1,
+    )
+    offset += search_lines
+    for ma in matches
+      if ma.lnum ==# s.lnum && ma.byteidx < byteidx
         continue
       endif
-    endif
-    if ma.text =~ s_regex
-      level += 1
-      continue
-    endif
-    if !!level
-      continue
-    endif
-    if has_m && ma.text =~ m_regex
-      pos_list += [ToPosItem(ma)]
-    endif
-  endfor
+      if ma.text =~ e_regex
+        if !nest
+          pos_list += [ToPosItem(ma)]
+          return pos_list
+        else
+          nest -= 1
+          continue
+        endif
+      endif
+      if ma.text =~ s_regex
+        nest += 1
+        continue
+      endif
+      if !!nest
+        continue
+      endif
+      if has_m && ma.text =~ m_regex
+        pos_list += [ToPosItem(ma)]
+      endif
+    endfor
+  endwhile
   return []
 enddef
 
