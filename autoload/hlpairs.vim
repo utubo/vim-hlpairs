@@ -121,18 +121,17 @@ def FindPairs(cur: list<number>): any
 enddef
 
 def GetPair(text: string, cache: dict<any>): any
-  var pair = get(cache, text, {})
+  const pair = get(cache, text, {})
   if !!pair
     return pair
   endif
   for p in b:hlpairs.pairs
-    if text !~# p.s
-      continue
+    if text =~# p.s
+      cache[text] = p
+      return p
     endif
-    pair = p
   endfor
-  cache[text] = pair
-  return pair
+  return {}
 enddef
 
 def ToPosItem(s: any): any
