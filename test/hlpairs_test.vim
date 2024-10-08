@@ -32,6 +32,8 @@ suite.before_each = () => {
   append(6, 'endif')
   normal gg
   set ft=vim
+  doautocmd Filetype vim
+  doautocmd SafeState *
 }
 
 #}}}
