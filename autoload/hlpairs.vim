@@ -9,7 +9,7 @@ export def Init()
     delay: 200,
     limit: 50,
     filetype: {
-    'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:endtry',
+    'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:\<catch\>:\<endtry\>',
       'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\)\>:\<end\>',
       'html,xml': {
         matchpairs: [
