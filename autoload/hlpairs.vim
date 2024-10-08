@@ -32,7 +32,7 @@ export def Init()
     au!
     au CursorMoved,CursorMovedI * silent! call CursorMoved()
     au OptionSet matchpairs call OptionSet()
-    au WinNew,FileType * call OptionSet()
+    au WinNew,FileType * au SafeState * ++once call OptionSet()
   augroup End
   g:hlpairs.initialized = 1
 enddef
@@ -53,6 +53,9 @@ def HighlightPair(t: any = 0)
       return
     endif
     if !exists('w:hlpairs')
+      return
+    endif
+    if !exists('b:hlpairs')
       return
     endif
     const cur = getpos('.')
@@ -201,11 +204,10 @@ enddef
 
 def GetWindowValues(retry: bool = false): any
   var w = get(w:, 'hlpairs', {
+    bufnr: bufnr(),
     matchid: 0,
     pos: [],
     pairs: [],
-    start_regex: '',
-    bufnr: bufnr(),
   })
   if !!w.pos || !retry
     return w
@@ -225,16 +227,18 @@ enddef
 def OptionSet()
   var ftpairs = []
   var ignores = []
-  for [k, v] in g:hlpairs.filetype->items()
-    if k->split(',')->index(&filetype) !=# -1
-      if type(v) ==# v:t_dict
-        ftpairs += v.matchpairs->ToList()
-        ignores += get(v, 'ignores', '')->ToList()
-      else
-        ftpairs += v->ToList()
+  if !!&filetype
+    for [k, v] in g:hlpairs.filetype->items()
+      if k->split(',')->index(&filetype) !=# -1
+        if type(v) ==# v:t_dict
+          ftpairs += v.matchpairs->ToList()
+          ignores += get(v, 'ignores', '')->ToList()
+        else
+          ftpairs += v->ToList()
+        endif
       endif
-    endif
-  endfor
+    endfor
+  endif
   ftpairs += g:hlpairs.filetype['*']->ToList()
   ftpairs += &matchpairs->split(',')
   var pairs = []
