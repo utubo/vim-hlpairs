@@ -25,7 +25,7 @@ suite.before_each = () => {
   normal! ggdG
   append(0, 'if test')
   append(1, '  if nest')
-  append(2, '    oneline((a) => (a ? 1 : 0))')
+  append(2, '    oneline((a) => ((a ? 1 : 0)))')
   append(3, '  endif')
   append(4, 'elseif test2')
   append(5, '  nop')
@@ -64,7 +64,7 @@ suite.JumpInOneline = () => {
   feedkeys('%', 'xt')
   assert.equals(getpos('.')[1 : 2], [3, 20], 'jump to left paren with %')
   feedkeys('%', 'xt')
-  assert.equals(getpos('.')[1 : 2], [3, 30], 'jump to right paren with %')
+  assert.equals(getpos('.')[1 : 2], [3, 32], 'jump to right paren with %')
 }
 
 suite.JumpForward = () => {

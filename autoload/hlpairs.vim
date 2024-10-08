@@ -119,7 +119,7 @@ def FindPairs(b: number, cur: list<number>): any
         continue
       endif
       const e = pos_list[-1]
-      if cur[1] < e[0] || cur[1] ==# e[0] && cur[2] <= e[1] + e[2]
+      if cur[1] < e[0] || cur[1] ==# e[0] && cur[2] < e[1] + e[2]
         return pos_list
       endif
     endfor
