@@ -62,12 +62,14 @@ def HighlightPair(t: any = 0)
       mark = cur[:]
     endif
     # const start_time = reltime()
-    const new_pos = FindPairs(cur)
+    const b = bufnr()
+    const new_pos = FindPairs(b, cur)
     # g:hlpairs.reltimestr = reltimestr(reltime(start_time))
-    if w:hlpairs.pos ==# new_pos
+    if w:hlpairs.pos ==# new_pos && w:hlpairs.bufnr ==# b
       # nothing update
       return
     endif
+    w:hlpairs.bufnr = b
     w:hlpairs.pos = new_pos
     if w:hlpairs.matchid !=# 0
       matchdelete(w:hlpairs.matchid)
@@ -85,9 +87,8 @@ def ReplaceMatchGroup(s: string, g: list<string>): string
   return s->substitute('\\[1-9]', (m) => g[str2nr(m[0][1]) - 1]->escape('\'), 'g')
 enddef
 
-def FindPairs(cur: list<number>): any
+def FindPairs(b: number, cur: list<number>): any
   # setup properties
-  const b = bufnr()
   const cur_lnum = cur[1]
   const cur_byteidx = cur[2] - 1
   const min_lnum = max([1, cur_lnum - g:hlpairs.limit])
