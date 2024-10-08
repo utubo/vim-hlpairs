@@ -89,7 +89,7 @@ def FindPairs(cur: list<number>): any
   const cur_byteidx = cur[2] - 1
   var starts = matchbufline(
     b,
-    w:hlpairs.start_regex,
+    b:hlpairs.start_regex,
     max([1, cur_lnum - g:hlpairs.limit]),
     cur_lnum,
     { submatches: true }
@@ -125,7 +125,7 @@ def GetPair(text: string, cache: dict<any>): any
   if !!pair
     return pair
   endif
-  for p in w:hlpairs.pairs
+  for p in b:hlpairs.pairs
     if text !~# p.s
       continue
     endif
@@ -251,12 +251,14 @@ def OptionSet()
   # keep old positions
   w:hlpairs = GetWindowValues()
   # set the new settings
-  w:hlpairs.pairs = pairs
-  w:hlpairs.start_regex = start_regexs->join('\|')
+  b:hlpairs = {
+    pairs: pairs,
+    start_regex: start_regexs->join('\|'),
+  }
   if type(g:hlpairs.skip) ==# type({})
-    w:hlpairs.skip = get(g:hlpairs.skip, &filetype, get(g:hlpairs.skip, '*', ''))
+    b:hlpairs.skip = get(g:hlpairs.skip, &filetype, get(g:hlpairs.skip, '*', ''))
   else
-    w:hlpairs.skip = g:hlpairs.skip
+    b:hlpairs.skip = g:hlpairs.skip
   endif
 enddef
 
