@@ -98,11 +98,17 @@ def FindPairs(cur: list<number>): any
     return []
   endif
   # find the end
+  const max_lnum = cur[1] + g:hlpairs.limit
+  var pairs_cache = {}
   for s in starts->reverse()
     if cur_lnum ==# s.lnum && cur_byteidx < s.byteidx
       continue
     endif
-    var pos_list = FindEnd(b, s)
+    var pair = GetPair(s.text, pairs_cache)
+    if !pair
+      return []
+    endif
+    var pos_list = FindEnd(b, max_lnum, s, pair)
     if pos_list ==# []
       continue
     endif
@@ -114,22 +120,26 @@ def FindPairs(cur: list<number>): any
   return []
 enddef
 
-def ToPosItem(s: any): any
-  return [s.lnum, s.byteidx + 1, s.text->len()]
-enddef
-
-def FindEnd(b: number, s: dict<any>): any
-  # get the pair of start
-  var pair = {}
+def GetPair(text: string, cache: dict<any>): any
+  var pair = get(cache, text, {})
+  if !!pair
+    return pair
+  endif
   for p in w:hlpairs.pairs
-    if s.text !~# p.s
+    if text !~# p.s
       continue
     endif
     pair = p
   endfor
-  if !pair
-    return []
-  endif
+  cache[text] = pair
+  return pair
+enddef
+
+def ToPosItem(s: any): any
+  return [s.lnum, s.byteidx + 1, s.text->len()]
+enddef
+
+def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>): any
   var s_regex = pair.s
   var e_regex = pair.e
   var m_regex = pair.m
@@ -141,12 +151,11 @@ def FindEnd(b: number, s: dict<any>): any
       m_regex = ReplaceMatchGroup(pair.m, s.submatches)
     endif
   endif
-  # find middles and the end
   const matches = matchbufline(
     b,
     s_regex .. '\|' .. e_regex .. (has_m ? $'\|{m_regex}' : ''),
     s.lnum,
-    line('.') + g:hlpairs.limit,
+    max_lnum,
   )
   if matches ==# []
     return []
