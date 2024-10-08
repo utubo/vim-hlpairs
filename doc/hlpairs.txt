@@ -45,7 +45,7 @@ https://github.com/utubo/vim-hlpairs.vim
 USAGE						*hlpairs-usage*
 
 Requirements
-	vim9script
+	Vim 9.1.0009 or later
 
 Installation
 

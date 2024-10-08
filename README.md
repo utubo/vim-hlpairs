@@ -6,7 +6,7 @@ vim-hlpairs highlights the parentheses around the cursor.
 
 ## Requirements
 
-Vim9script
+Vim 9.1.0009 or later
 
 ## Installation
 
