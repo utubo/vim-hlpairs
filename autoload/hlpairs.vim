@@ -205,6 +205,7 @@ def GetWindowValues(retry: bool = false): any
     pos: [],
     pairs: [],
     start_regex: '',
+    bufnr: bufnr(),
   })
   if !!w.pos || !retry
     return w
