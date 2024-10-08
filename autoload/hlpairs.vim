@@ -183,7 +183,7 @@ def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>): any
     if !!level
       continue
     endif
-    if !!has_m && ma.text =~ m_regex
+    if has_m && ma.text =~ m_regex
       pos_list += [ToPosItem(ma)]
     endif
   endfor
@@ -314,7 +314,7 @@ def TextObj(a: bool): list<any>
     return []
   endif
   var [sy, sx, sl] = p[0]
-  var [ey, ex, el] = p[1]
+  var [ey, ex, el] = p[-1]
   if a
     ex += el - 1
   else
