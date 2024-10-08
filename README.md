@@ -73,8 +73,8 @@ vim-hlpairs uses highlight group `MatchParen`.
 
 - `hlpairs#Jump([{flags}])` Jump to the next paren.
   - {flags} is a String.
-  - 'f': Jump the next paren.
-  - 'b': Jump the previous paren.
+  - 'f': Jump the next paren. (no loop)
+  - 'b': Jump the previous paren. (no loop)
   - 'e': Jump to the end of the match.
 - `hlpairs#HiglihtOuter()` Highlight the pair outside of the current pair.
 - `hlpairs#ReturnCursor()` Return the cursor before `hlpairs#Jump()`.

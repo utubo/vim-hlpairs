@@ -279,20 +279,27 @@ export def Jump(flags: string = ''): bool
   var p = []
   const cur = getpos('.')
   if flags =~# 'b'
-    p = pos_list[-1]
     for i in range(pos_list->len())->reverse()
-      p = pos_list[i]
-      if cur[1] > p[0] || cur[1] ==# p[0] && cur[2] > p[1]
+      const j = pos_list[i]
+      if cur[1] > j[0] || cur[1] ==# j[0] && cur[2] > j[1]
+        p = j
         break
       endif
     endfor
   else
     for i in pos_list
-      p = i
-      if cur[1] < p[0] || cur[1] ==# p[0] && cur[2] < p[1]
+      if cur[1] < i[0] || cur[1] ==# i[0] && cur[2] < i[1]
+        p = i
         break
       endif
     endfor
+  endif
+  if !p
+    if flags ==# ''
+      p = pos_list[0]
+    else
+      return false
+    endif
   endif
   const offset = flags =~# 'e' ? p[2] - 1 : 0
   skip_mark = 1

@@ -122,8 +122,8 @@ FUNCTIONS					*hlpairs-functions*
 
 `hlpairs#Jump([{flags}])`	Jump to the next paren.
 				{flags} is a String.
-				'f'	Jump to the next paren.
-				'b'	Jump to the previous paren.
+				'f'	Jump to the next paren. (no loop)
+				'b'	Jump to the previous paren. (no loop)
 				'e'	Jump to the end of the match
 
 `hlpairs#JumpForward()`		Jump to the next paren.
