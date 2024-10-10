@@ -31,6 +31,6 @@ augroup hlpairs
   au!
   au CursorMoved,CursorMovedI * silent! call hlpairs#CursorMoved()
   au OptionSet matchpairs silent! unlet b:hlpairs
-  au WinNew,FileType * silent! unlet b:hlpairs
+  au FileType * silent! unlet b:hlpairs
 augroup End
 
