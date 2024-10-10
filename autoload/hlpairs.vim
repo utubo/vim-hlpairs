@@ -31,8 +31,8 @@ export def Init()
   augroup hlpairs
     au!
     au CursorMoved,CursorMovedI * silent! call CursorMoved()
-    au OptionSet matchpairs call OptionSet()
-    au WinNew,FileType * au SafeState * ++once call OptionSet()
+    au OptionSet matchpairs silent! unlet b:hlpairs
+    au WinNew,FileType * silent! unlet b:hlpairs
   augroup End
   g:hlpairs.initialized = 1
 enddef
@@ -48,15 +48,8 @@ enddef
 
 def HighlightPair(t: any = 0)
   try
-    if !exists('g:hlpairs.initialized')
-      Init()
-      return
-    endif
-    if !exists('w:hlpairs')
-      return
-    endif
-    if !exists('b:hlpairs')
-      return
+    if !exists('w:hlpairs') || !exists('b:hlpairs')
+      OptionSet()
     endif
     const cur = getpos('.')
     if skip_mark
