@@ -8,12 +8,12 @@ var timer = 0
 export def CursorMoved()
   if timer !=# 0
     timer_stop(timer)
-    timer = 0
   endif
   timer = timer_start(g:hlpairs.delay, HighlightPair)
 enddef
 
 def HighlightPair(t: any = 0)
+  timer = 0
   try
     if !exists('b:hlpairs')
       OnOptionSet()
