@@ -1,7 +1,7 @@
 vim9script
 
 var mark = [] # origin cursorpos
-var skip_mark = 0
+var prevent_remark = 0
 const search_lines = 5
 
 var timer = 0
@@ -27,8 +27,8 @@ def HighlightPair(t: any = 0)
       }
     endif
     const cur = getpos('.')
-    if skip_mark
-      skip_mark -= 1
+    if prevent_remark
+      prevent_remark -= 1
     else
       mark = cur[:]
     endif
@@ -58,12 +58,21 @@ def ReplaceMatchGroup(s: string, g: list<string>): string
   return s->substitute('\\[1-9]', (m) => g[str2nr(m[0][1]) - 1]->escape('\'), 'g')
 enddef
 
+def IsSkip(s: any): bool
+  const c = getpos('.')
+  setpos('.', [c[0], s.lnum, s.byteidx, c[3]])
+  const result = eval(b:hlpairs.skip)
+  setpos('.', c)
+  return !!result
+enddef
+
 def FindPairs(b: number, cur: list<number>): any
   # setup properties
   const cur_lnum = cur[1]
   const cur_byteidx = cur[2] - 1
   const min_lnum = max([1, cur_lnum - g:hlpairs.limit])
   const max_lnum = cur_lnum + g:hlpairs.limit
+  const has_skip = !!b:hlpairs.skip
   # find the start
   var offset = cur_lnum
   while min_lnum <= offset
@@ -81,11 +90,14 @@ def FindPairs(b: number, cur: list<number>): any
       if cur_lnum ==# s.lnum && cur_byteidx < s.byteidx
         continue
       endif
+      if has_skip && IsSkip(s)
+        continue
+      endif
       var pair = GetPair(s.text, pairs_cache)
       if !pair
         break
       endif
-      var pos_list = FindEnd(b, max_lnum, s, pair)
+      var pos_list = FindEnd(b, max_lnum, s, pair, has_skip)
       if pos_list ==# []
         continue
       endif
@@ -116,7 +128,8 @@ def ToPosItem(s: any): any
   return [s.lnum, s.byteidx + 1, s.text->len()]
 enddef
 
-def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>): any
+def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>,
+has_skip: bool): any
   # setup properties
   const byteidx = s.byteidx + s.text->len()
   var s_regex = pair.s
@@ -144,6 +157,9 @@ def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>): any
     offset += search_lines
     for ma in matches
       if ma.lnum ==# s.lnum && ma.byteidx < byteidx
+        continue
+      endif
+      if has_skip && IsSkip(ma)
         continue
       endif
       if ma.text =~ e_regex
@@ -269,7 +285,7 @@ export def Jump(flags: string = ''): bool
     endif
   endif
   const offset = flags =~# 'e' ? p[2] - 1 : 0
-  skip_mark = 1
+  prevent_remark = 1
   setpos('.', [0, p[0], p[1] + offset])
   return true
 enddef
@@ -286,7 +302,7 @@ export def HighlightOuter()
     return
   endif
   const c = getcurpos()
-  skip_mark = 1
+  prevent_remark = 1
   setpos('.', [0, p[0][0], p[0][1] - 1])
   HighlightPair()
   setpos('.', c)
