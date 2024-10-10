@@ -1,10 +1,10 @@
 vim9script
 
+const SEARCH_LINES = 5 # the line count for matchbufline
+var timer = 0 # for CursorMoved
 var mark = [] # origin cursorpos
 var prevent_remark = 0
-const search_lines = 5
 
-var timer = 0
 export def CursorMoved()
   if timer !=# 0
     timer_stop(timer)
@@ -79,11 +79,11 @@ def FindPairs(b: number, cur: list<number>): any
     var starts = matchbufline(
       b,
       b:hlpairs.start_regex,
-      max([1, offset - search_lines + 1]),
+      max([1, offset - SEARCH_LINES + 1]),
       offset,
       { submatches: true }
     )
-    offset -= search_lines
+    offset -= SEARCH_LINES
     # find the end
     var pairs_cache = {}
     for s in starts->reverse()
@@ -152,9 +152,9 @@ has_skip: bool): any
       b,
       s_regex .. '\|' .. e_regex .. (has_m ? $'\|{m_regex}' : ''),
       offset,
-      offset + search_lines - 1,
+      offset + SEARCH_LINES - 1,
     )
-    offset += search_lines
+    offset += SEARCH_LINES
     for ma in matches
       if ma.lnum ==# s.lnum && ma.byteidx < byteidx
         continue
