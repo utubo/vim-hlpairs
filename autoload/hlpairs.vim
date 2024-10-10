@@ -27,7 +27,6 @@ export def Init()
     },
   }
   g:hlpairs->extend(override)
-  OptionSet()
   augroup hlpairs
     au!
     au CursorMoved,CursorMovedI * silent! call CursorMoved()
@@ -48,8 +47,16 @@ enddef
 
 def HighlightPair(t: any = 0)
   try
-    if !exists('w:hlpairs') || !exists('b:hlpairs')
-      OptionSet()
+    if !exists('b:hlpairs')
+      OnOptionSet()
+    endif
+    if !exists('w:hlpairs')
+      w:hlpairs = {
+        bufnr: bufnr(),
+        matchid: 0,
+        pos: [],
+        pairs: [],
+      }
     endif
     const cur = getpos('.')
     if skip_mark
@@ -195,20 +202,6 @@ def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>): any
   return []
 enddef
 
-def GetWindowValues(retry: bool = false): any
-  var w = get(w:, 'hlpairs', {
-    bufnr: bufnr(),
-    matchid: 0,
-    pos: [],
-    pairs: [],
-  })
-  if !!w.pos || !retry
-    return w
-  endif
-  HighlightPair()
-  return GetWindowValues()
-enddef
-
 def ToList(v: any): any
   return type(v) ==# v:t_string ? v->split(',') : v
 enddef
@@ -217,7 +210,7 @@ def ConstantLength(s: string): number
   return s->stridx('*') ==# -1 && s->stridx('\') ==# -1 ? len(s) : 0
 enddef
 
-def OptionSet()
+def OnOptionSet()
   var ftpairs = []
   var ignores = []
   if !!&filetype
@@ -255,8 +248,6 @@ def OptionSet()
   for p in pairs
     start_regexs += [p.s]
   endfor
-  # keep old positions
-  w:hlpairs = GetWindowValues()
   # set the new settings
   b:hlpairs = {
     pairs: pairs,
@@ -269,8 +260,18 @@ def OptionSet()
   endif
 enddef
 
+
+def GetPosList(): any
+  var p = get(w:, 'hlpairs', { pos: [] }).pos
+  if !!p
+    return p
+  endif
+  HighlightPair()
+  return w:hlpairs.pos
+enddef
+
 export def Jump(flags: string = ''): bool
-  const pos_list = GetWindowValues(true).pos
+  const pos_list = GetPosList()
   if !pos_list
     return false
   endif
@@ -312,7 +313,7 @@ export def ReturnCursor()
 enddef
 
 export def HighlightOuter()
-  const p = GetWindowValues(true).pos
+  const p = GetPosList()
   if !p
     return
   endif
@@ -324,7 +325,7 @@ export def HighlightOuter()
 enddef
 
 def TextObj(a: bool): list<any>
-  const p = GetWindowValues(true).pos
+  const p = GetPosList()
   if !p
     return []
   endif
