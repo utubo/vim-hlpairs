@@ -6,7 +6,6 @@ const assert = themis#helper('assert')
 # setup test {{{
 execute 'source' expand('<sfile>:p:h:h') .. '/plugin/hlpairs.vim'
 execute 'source' expand('<sfile>:p:h:h') .. '/autoload/hlpairs.vim'
-hlpairs#Init()
 
 suite.before = () => {
   g:hlpairs.delay = 1
