@@ -1,7 +1,7 @@
 vim9script
 
 const SEARCH_LINE_COUNT = 5
-const PAIRS_CACHE_SIZE = 10
+const PAIRS_CACHE_SIZE = 20
 var timer = 0 # for CursorMoved
 var mark = [] # origin cursorpos
 var prevent_remark = 0
@@ -93,7 +93,7 @@ def FindPairs(b: number, cur: list<number>): any
       if has_skip && IsSkip(s)
         continue
       endif
-      var pair = GetPair(s.text, b:hlpairs.pairs_cache)
+      var pair = GetPair(s.text)
       if !pair
         break
       endif
@@ -110,18 +110,20 @@ def FindPairs(b: number, cur: list<number>): any
   return []
 enddef
 
-def GetPair(text: string, cache: dict<any>): any
-  const pair = get(cache, text, {})
+def GetPair(text: string): any
+  const pair = get(b:hlpairs.pairs_cache, text, {})
   if !!pair
     return pair
   endif
   for p in b:hlpairs.pairs
     if text =~# p.s
-      const keys = cache->keys()
-      if keys->len() > PAIRS_CACHE_SIZE
-        unlet cache[keys[0]]
+      const k = b:hlpairs.pairs_cache_keys[0]
+      if !!k
+        unlet b:hlpairs.pairs_cache[k]
       endif
-      cache[text] = p
+      unlet b:hlpairs.pairs_cache_keys[0]
+      b:hlpairs.pairs_cache[text] = p
+      b:hlpairs.pairs_cache_keys += [text]
       return p
     endif
   endfor
@@ -240,6 +242,7 @@ def OnOptionSet()
   b:hlpairs = {
     pairs: pairs,
     pairs_cache: {},
+    pairs_cache_keys: repeat([''], PAIRS_CACHE_SIZE),
     start_regex: start_regexs->join('\|'),
   }
   if type(g:hlpairs.skip) ==# type({})
