@@ -48,7 +48,7 @@ g:hlpairs = {
   delay: 150,
   limit: 50,
   filetype: {
-    'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:\<\(catch\|finally\)\>:\<endtry\>',
+    'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:\<\(catch\|finally\)\>:\<endtry\>,augroup .*:augroup END',
     'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\)\>:\<end\>',
     'html,xml': {
       matchpairs: [
