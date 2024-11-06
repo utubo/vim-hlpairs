@@ -74,9 +74,9 @@ def FindPairs(b: number, cur: list<number>): any
   const min_lnum = max([1, cur_lnum - g:hlpairs.limit])
   const max_lnum = cur_lnum + g:hlpairs.limit
   const has_skip = !!b:hlpairs.skip
-  # find the start
   var offset = cur_lnum
   while min_lnum <= offset
+    # find the start
     var starts = matchbufline(
       b,
       b:hlpairs.start_regex,
@@ -93,7 +93,7 @@ def FindPairs(b: number, cur: list<number>): any
       if has_skip && IsSkip(s)
         continue
       endif
-      var pair = GetPair(s.text)
+      var pair = GetPairParams(s.text)
       if !pair
         break
       endif
@@ -110,7 +110,7 @@ def FindPairs(b: number, cur: list<number>): any
   return []
 enddef
 
-def GetPair(text: string): any
+def GetPairParams(text: string): any
   const pair = get(b:hlpairs.pairs_cache, text, {})
   if !!pair
     return pair
@@ -134,8 +134,7 @@ def ToPosItem(s: any): any
   return [s.lnum, s.byteidx + 1, s.text->len()]
 enddef
 
-def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>,
-has_skip: bool): any
+def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>, has_skip: bool): any
   # setup properties
   const byteidx = s.byteidx + s.text->len()
   var s_regex = pair.s
