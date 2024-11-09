@@ -132,9 +132,9 @@ FUNCTIONS					*hlpairs-functions*
 				'b'	Jump to the previous paren. (no loop)
 				'e'	Jump to the end of the match
 
-`hlpairs#JumpForward()`		Jump to the next paren.
-
 `hlpairs#JumpBack()`		Jump to the previous paren.
+
+`hlpairs#JumpForward()`		Jump to the next paren.
 
 `hlpairs#HiglihtOuter()`	Highlight the pair outside of the current pair.
 

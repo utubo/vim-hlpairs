@@ -344,6 +344,14 @@ export def TextObj(a: bool)
   setpos('.', [c[0], ey, ex, c[3]])
 enddef
 
+export def JumpBack()
+  Jump('b')
+enddef
+
+export def JumpForward()
+  Jump('fe')
+enddef
+
 export def TextObjUserMap(key: string)
   for o in ['o', 'v']
     for a in ['a', 'i']
