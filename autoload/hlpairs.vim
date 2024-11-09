@@ -315,10 +315,10 @@ export def HighlightOuter()
   setpos('.', c)
 enddef
 
-def TextObj(a: bool): list<any>
+export def TextObj(a: bool)
   const p = GetPosList()
   if !p
-    return []
+    return
   endif
   var [sy, sx, sl] = p[0]
   var [ey, ex, el] = p[-1]
@@ -333,29 +333,22 @@ def TextObj(a: bool): list<any>
     endif
   endif
   const c = getpos('.')
-  return [
-    'v',
-    [c[0], sy, sx, c[3]],
-    [c[0], ey, ex, c[3]],
-  ]
-enddef
-
-export def TextObjA(): list<any>
-  return TextObj(true)
-enddef
-
-export def TextObjI(): list<any>
-  return TextObj(false)
+  var m = mode()
+  if m ==# 'v' || m ==# 'V'
+    execute 'normal!' m
+  else
+    m = 'v'
+  endif
+  setpos('.', [c[0], sy, sx, c[3]])
+  execute 'normal!' m
+  setpos('.', [c[0], ey, ex, c[3]])
 enddef
 
 export def TextObjUserMap(key: string)
-  textobj#user#plugin('hlpairs', {
-    '-': {
-      'select-a': $'a{key}',
-      'select-a-function': 'hlpairs#TextObjA',
-      'select-i': $'i{key}',
-      'select-i-function': 'hlpairs#TextObjI',
-    },
-  })
+  for o in ['o', 'v']
+    for a in ['a', 'i']
+      execute $'{o}noremap {a}{key} <ScriptCmd>hlpairs#TextObj({a ==# 'a'})<CR>'
+    endfor
+  endfor
 enddef
 
