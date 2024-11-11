@@ -103,6 +103,13 @@ def FindPairs(b: number, cur: list<number>): any
       endif
       const e = pos_list[-1]
       if cur[1] < e[0] || cur[1] ==# e[0] && cur[2] < e[1] + e[2]
+        if pair.s_full !=# pair.s
+          const p = pos_list[0]
+          const t = getline(p[0])[p[1] - 1 :]
+          g:t = t
+          const l = t->matchstr(pair.s_full)->len()
+          pos_list[0][2] = l
+        endif
         return pos_list
       endif
     endfor
@@ -222,15 +229,17 @@ def OnOptionSet()
       continue
     endif
     const ary = sme->split('\\\@<!:')
-    const start = ary[0]
-    const middle = len(ary) ==# 3 ? ary[1] : ''
-    const end = ary[-1]
+    const s_full = ary[0]
+    const s = s_full->split('\\%')[0]
+    const m = len(ary) ==# 3 ? ary[1] : ''
+    const e = ary[-1]
     pairs += [{
-      s: start ==# '[' ? '\[' : start,
-      m: middle,
-      e: end,
-      has_matchstr: (end =~# '\\[1-9]') || (middle =~# '\\[1-9]'),
-      has_m: middle !=# ''
+      s: s ==# '[' ? '\[' : s,
+      s_full: s_full,
+      m: m,
+      e: e,
+      has_matchstr: (e =~# '\\[1-9]') || (m =~# '\\[1-9]'),
+      has_m: m !=# ''
     }]
   endfor
   var start_regexs = []
