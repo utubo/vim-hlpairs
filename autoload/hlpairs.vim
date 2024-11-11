@@ -334,12 +334,15 @@ export def TextObj(a: bool)
   if a
     ex += el - 1
   else
-    sx += sl
+    sx += sl - 1
     ex -= 1
     if ex ==# 0
       ey -= 1
       ex = getline(ey)->len()
     endif
+  endif
+  if sy ==# ey && ex <= sx
+    return
   endif
   const c = getpos('.')
   var m = mode()
@@ -348,9 +351,12 @@ export def TextObj(a: bool)
   else
     m = 'v'
   endif
-  setpos('.', [c[0], sy, sx, c[3]])
-  execute 'normal!' m
   setpos('.', [c[0], ey, ex, c[3]])
+  execute 'normal!' m
+  setpos('.', [c[0], sy, sx, c[3]])
+  if !a
+    normal! l
+  endif
 enddef
 
 export def JumpBack()
