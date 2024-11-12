@@ -27,6 +27,7 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
 
 ### `g:hlpairs`
 
+- `key` Map keys. default is `%`.
 - `delay` The delay milliseconds to highlight.
 - `limit` Limit number of lines to search.
 - `skip` You can set a string or a dict&lt;filetype: expr&gt;.  
@@ -45,6 +46,7 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
 The default is
 ```vimscript
 g:hlpairs = {
+  key: '%',
   delay: 150,
   limit: 50,
   filetype: {

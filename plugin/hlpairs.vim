@@ -7,6 +7,7 @@ g:loaded_hlpairs = 1
 
 const override = get(g:, 'hlpairs', {})
 g:hlpairs = {
+  key: '%',
   delay: 50,
   limit: 50,
   filetype: {
@@ -35,3 +36,12 @@ augroup hlpairs
   au FileType * silent! unlet b:hlpairs
 augroup END
 
+if !!g:hlpairs.key
+  const k = g:hlpairs.key
+  execute $"nnoremap {k} <ScriptCmd>call hlpairs#Jump()<CR>"
+  execute $"nnoremap ]{k} <Cmd>call hlpairs#Jump('f')<CR>"
+  execute $"nnoremap [{k} <Cmd>call hlpairs#Jump('b')<CR>"
+  execute $"nnoremap <Leader>{k} <Cmd>call hlpairs#HighlightOuter()<CR>"
+  execute $"nnoremap <Space>{k} <Cmd>call hlpairs#ReturnCursor()<CR>"
+  execute $"hlpairs#TextObjUserMap('{k}')"
+endif

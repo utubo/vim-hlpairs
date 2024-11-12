@@ -29,6 +29,7 @@ USAGE				|hlpairs-usage|
 INTERFACE			|hlpairs-interface|
   VARIABLES			  |hlpairs-variables|
   COLORS			  |hlpairs-colors|
+  MAPPINGS			  |hlpairs-mappings|
   FUNCTIONS			  |hlpairs-functions|
 
 
@@ -71,11 +72,14 @@ VARIABLES					*hlpairs-variables*
 g:hlpairs					*g:hlpairs*
 	`g:hlpairs` is dictionaly.
 
-		`delay` 	The delay milliseconds to highlight.
-		`limit` 	Limit number of lines to search.
-		`skip` 		You can set a string or
+		`key`		Map keys. default is `%`.
+				See `hlpairs-mappings`.
+				If `key` is empty, hlpairs does not map.
+		`delay`		The delay milliseconds to highlight.
+		`limit`		Limit number of lines to search.
+		`skip`		You can set a string or
 				a dict<filetype: expr>
-		 		See `:help searchpair()`
+				See `:help searchpair()`
 		`filetype`	The parentheses for file types.
 				`*` is any filetype.
 				The value are csv-string or list or dict.
@@ -91,6 +95,7 @@ g:hlpairs					*g:hlpairs*
 	The default is
 >
 	g:hlpairs = {
+	  key: '%',
 	  delay: 50,
 	  limit: 50,
 	  filetype: {
@@ -124,6 +129,23 @@ COLORS						*hlpairs-colors*
 
 vim-hlpairs uses highlight group `MatchParen`.
 
+
+------------------------------------------------------------------------------
+MAPPINGS					*hlpairs-mappings*
+
+The default is
+
+`%`		Jump to the next paren.(loop)
+
+`[%`		Jump to the previous paren.
+
+`]%`		Jump to the next paren.(noloop)
+
+`<Leader>%`	Highlight the pair outside of the current pair.
+
+`<Space>%`	Return the cursor before jump with `%`.
+
+`a%`, `i%`	onoremap. around pairs and inner pairs.
 
 ------------------------------------------------------------------------------
 FUNCTIONS					*hlpairs-functions*
