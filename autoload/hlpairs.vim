@@ -346,12 +346,15 @@ export def TextObj(a: bool)
       execute $'normal! o{el - 1}l'
     endif
   else
+    # start
     execute $'normal! {sl}l'
     var indent = ''
     if sy + 1 < ey
+      # keep linebreak
       normal j0
       indent = getline(sy)->matchstr('^\s\+')
     endif
+    # end
     if ex < 2 || getline(ey)[ : ex - 2] ==# indent
       normal! ok$
     else
