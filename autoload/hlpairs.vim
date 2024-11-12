@@ -342,7 +342,9 @@ export def TextObj(a: bool)
   execute 'normal!' m
   setpos('.', [c[0], sy, sx, c[3]])
   if a
-    execute $'normal! o{el - 1}l'
+    if 1 < el
+      execute $'normal! o{el - 1}l'
+    endif
   else
     execute $'normal! {sl}l'
     var indent = ''
