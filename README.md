@@ -18,75 +18,7 @@ g:loaded_matchit = 1
 
 ## Configuration
 
-### `g:hlpairs`
-
-- `key` Map keys. default is `%`.  
-  See `hlpairs-mappings`.  
-  If `key` is empty, hlpairs does not map.
-- `delay` The delay milliseconds to highlight.
-- `limit` Limit number of lines to search.
-- `skip` You can set a string or a dict&lt;filetype: expr&gt;.  
-  See `:help searchpair()`.
-- `filetype` The parentheses for file types.  
-  `*` is any filetype.  
-  The values are csv-string or list or dict.  
-  You can set patterns for ignore with dict.  
-  - `matchpairs` match pairs.  
-  - `ignores` the patterns for ignore
-
-  You can use `\1` in the end or pair,
-  but it won't work perfectly, so use `\V`.  
-  See `:help mps`, See `:help \\V`
-
-The default is
-```vimscript
-g:hlpairs = {
-  key: '%',
-  delay: 150,
-  limit: 50,
-  filetype: {
-    'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:\<\(catch\|finally\)\>:\<endtry\>,augroup .*:augroup END',
-    'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\|if\)\>:\<end\>',
-    'lua': '\<if\>:\(else\|elseif\):\<end\>,\<\(function\|while\|for\|do\|if\)\>:\<end\>,\[\[:\]\]',
-    'html,xml': {
-      matchpairs: [
-        '\<[a-zA-Z0-9_\:-]\+=":"',
-        '<\([a-zA-Z0-9_\:]\+\)>\?:</\1>',
-        '<!--:-->'
-      ],
-      ignores: '<:>'
-    },
-    '*': '\w\@<!\w*(:)',
-  },
-  skip: {
-    'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
-  }
-}
-```
-
-### Color
-vim-hlpairs uses highlight group `MatchParen`.
-
-## Mappings
-The default is
-
-- `%` Jump to the next paren.(loop)
-- `[%` Jump to the previous paren.
-- `]%` Jump to the next paren.(noloop)
-- `<Leader>%` Highlight the pair outside of the current pair.
-- `<Space>%` Return the cursor before jump with `%`.
-- `a%`, `i%` onoremap. around pairs and inner pairs.
-
-## Functions
-
-- `hlpairs#Jump([{flags}])` Jump to the next paren.
-  - {flags} is a String.
-  - 'f': Jump the next paren. (no loop)
-  - 'b': Jump the previous paren. (no loop)
-  - 'e': Jump to the end of the match.
-- `hlpairs#HiglihtOuter()` Highlight the pair outside of the current pair.
-- `hlpairs#ReturnCursor()` Return the cursor before `hlpairs#Jump()`.
-- `hlpairs#TextObjUserMap({key})` Mapping text-obj to `a{key}` and `i{key}`.
+See [hlpairs.txt](doc/hlpairs.txt).
 
 ## Author
 utubo (https://github.com/utubo)
