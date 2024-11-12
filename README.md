@@ -27,7 +27,9 @@ autocmd VimEnter * hlpairs#TextObjUserMap('%')
 
 ### `g:hlpairs`
 
-- `key` Map keys. default is `%`.
+- `key` Map keys. default is `%`.  
+  See `hlpairs-mappings`.  
+  If `key` is empty, hlpairs does not map.
 - `delay` The delay milliseconds to highlight.
 - `limit` Limit number of lines to search.
 - `skip` You can set a string or a dict&lt;filetype: expr&gt;.  
@@ -71,6 +73,16 @@ g:hlpairs = {
 
 ### Color
 vim-hlpairs uses highlight group `MatchParen`.
+
+## Mappings
+The default is
+
+- `%` Jump to the next paren.(loop)
+- `[%` Jump to the previous paren.
+- `]%` Jump to the next paren.(noloop)
+- `<Leader>%` Highlight the pair outside of the current pair.
+- `<Space>%` Return the cursor before jump with `%`.
+- `a%`, `i%` onoremap. around pairs and inner pairs.
 
 ## Functions
 
