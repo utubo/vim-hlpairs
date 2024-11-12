@@ -344,7 +344,19 @@ export def TextObj(a: bool)
   if a
     execute $'normal! o{el - 1}l'
   else
-    execute $'normal! {sl}lo{ex <= 1 ? 'k$' : 'h'}'
+    execute $'normal! {sl}l'
+    var indent = ''
+    if sy + 1 < ey
+      normal j0
+      indent = getline(sy)->matchstr('^\s\+')
+      g:i = indent
+      g:x = ex
+    endif
+    if ex < 2 || getline(ey)[ : ex - 2] ==# indent
+      normal! ok$
+    else
+      normal! oh
+    endif
   endif
 enddef
 
