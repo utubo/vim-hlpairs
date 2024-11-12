@@ -355,7 +355,7 @@ export def TextObj(a: bool)
     var indent = ''
     if sy + 1 < ey
       # keep linebreak
-      normal j0
+      normal! j0
       indent = getline(sy)->matchstr('^\s\+')
     endif
     # end
