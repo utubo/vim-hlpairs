@@ -331,19 +331,6 @@ export def TextObj(a: bool)
   endif
   var [sy, sx, sl] = p[0]
   var [ey, ex, el] = p[-1]
-  if a
-    ex += el - 1
-  else
-    sx += sl - 1
-    ex -= 1
-    if ex ==# 0
-      ey -= 1
-      ex = getline(ey)->len()
-    endif
-  endif
-  if sy ==# ey && ex <= sx
-    return
-  endif
   const c = getpos('.')
   var m = mode()
   if m ==# 'v' || m ==# 'V'
@@ -354,8 +341,10 @@ export def TextObj(a: bool)
   setpos('.', [c[0], ey, ex, c[3]])
   execute 'normal!' m
   setpos('.', [c[0], sy, sx, c[3]])
-  if !a
-    normal! l
+  if a
+    execute $'normal! o{el - 1}l'
+  else
+    execute $'normal! {sl}lo{ex <= 1 ? 'k$' : 'h'}'
   endif
 enddef
 
