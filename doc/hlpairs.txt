@@ -91,7 +91,7 @@ g:hlpairs					*g:hlpairs*
 	The default is
 >
 	g:hlpairs = {
-	  delay: 150,
+	  delay: 50,
 	  limit: 50,
 	  filetype: {
 	    'vim':  '\<if\>:else:endif,for:endfor,while:endwhile,'
