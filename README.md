@@ -79,7 +79,7 @@ vim-hlpairs uses highlight group `MatchParen`.
   - 'e': Jump to the end of the match.
 - `hlpairs#HiglihtOuter()` Highlight the pair outside of the current pair.
 - `hlpairs#ReturnCursor()` Return the cursor before `hlpairs#Jump()`.
-- `hlpairs#TextObjUserMap({key})` Mapping text-obj to $'a{key}' and $'i{key}'.
+- `hlpairs#TextObjUserMap({key})` Mapping text-obj to `a{key}` and `i{key}`.
 
 ## Author
 utubo (https://github.com/utubo)
