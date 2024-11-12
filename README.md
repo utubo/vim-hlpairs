@@ -12,15 +12,8 @@ Vim 9.1.0009 or later
 
 ```vim
 call dein#add('utubo/vim-hlpairs')
-# optional
 g:loaded_matchparen = 1
 g:loaded_matchit = 1
-nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
-nnoremap ]% <Cmd>call hlpairs#Jump('f')<CR>
-nnoremap [% <Cmd>call hlpairs#Jump('b')<CR>
-nnoremap <Leader>% <Cmd>call hlpairs#HighlightOuter()<CR>
-nnoremap <Space>% <Cmd>call hlpairs#ReturnCursor()<CR>
-autocmd VimEnter * hlpairs#TextObjUserMap('%')
 ```
 
 ## Configuration
