@@ -1,4 +1,4 @@
-*hlpairs.txt*	a summary
+*hlpairs.txt*	Highlights the parentheses around the cursor.
 
 Author  : utubo
 License : MIT license  {{{
@@ -55,6 +55,7 @@ Installation
 	call dein#add('utubo/vim-hlpairs')
 	g:loaded_matchparen = 1
 	g:loaded_matchit = 1
+<
 
 ==============================================================================
 INTERFACE					*hlpairs-interface*
@@ -66,7 +67,7 @@ g:hlpairs					*g:hlpairs*
 	`g:hlpairs` is dictionaly.
 
 		`key`		Map keys. default is `%`.
-				See `hlpairs-mappings`.
+				See |hlpairs-mappings|.
 				If `key` is empty, hlpairs does not map.
 		`delay`		The delay milliseconds to highlight.
 		`limit`		Limit number of lines to search.
@@ -115,7 +116,7 @@ g:hlpairs					*g:hlpairs*
 	    'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
 	  }
 	}
->
+<
 
 ------------------------------------------------------------------------------
 COLORS						*hlpairs-colors*
