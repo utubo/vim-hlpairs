@@ -108,6 +108,10 @@ def FindPairs(b: number, cur: list<number>): any
           const t = getline(p[0])[p[1] - 1 :]
           g:t = t
           const l = t->matchstr(pair.s_full)->len()
+          if !l
+            pos_list = []
+            continue
+          endif
           pos_list[0][2] = l
         endif
         return pos_list
