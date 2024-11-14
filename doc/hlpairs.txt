@@ -72,8 +72,9 @@ g:hlpairs					*g:hlpairs*
 		`delay`		The delay milliseconds to highlight.
 		`timeout`	The search stops when more than this many
 				millisecond shave passed.
+				if less than `1` then it does not timeout.
 		`limit`		Limit number of lines to search.
-				if `limit` < `0` then search all lines.
+				if less than `1` then it searches all lines.
 		`skip`		You can set a string or
 				a dict<filetype: expr>
 				See `:help searchpair()`
