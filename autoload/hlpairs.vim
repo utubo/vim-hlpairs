@@ -5,6 +5,8 @@ const PAIRS_CACHE_SIZE = 20
 var timer = 0 # for CursorMoved
 var mark = [] # origin cursorpos
 var prevent_remark = 0
+var start_time = reltime()
+var timeout_sec = 0.0
 
 export def CursorMoved()
   if timer !=# 0
@@ -15,6 +17,10 @@ enddef
 
 def HighlightPair(t: any = 0)
   timer = 0
+  if 0 < g:hlpairs.timeout
+    timeout_sec = 0.001 * g:hlpairs.timeout
+    start_time = reltime()
+  endif
   try
     if !exists('b:hlpairs')
       OnOptionSet()
@@ -33,10 +39,8 @@ def HighlightPair(t: any = 0)
     else
       mark = cur[:]
     endif
-    # const start_time = reltime()
     const b = bufnr()
     const new_pos = FindPairs(b, cur)
-    # g:hlpairs.reltimestr = reltimestr(reltime(start_time))
     if w:hlpairs.pos ==# new_pos && w:hlpairs.bufnr ==# b
       # nothing update
       return
@@ -69,10 +73,11 @@ enddef
 
 def FindPairs(b: number, cur: list<number>): any
   # setup properties
+  const limit = g:hlpairs.limit <= 0 ? line('$') : g:hlpairs.limit
   const cur_lnum = cur[1]
   const cur_byteidx = cur[2] - 1
-  const min_lnum = max([1, cur_lnum - g:hlpairs.limit])
-  const max_lnum = cur_lnum + g:hlpairs.limit
+  const min_lnum = max([1, cur_lnum - limit])
+  const max_lnum = cur_lnum + limit
   const has_skip = !!b:hlpairs.skip
   var offset = cur_lnum
   while min_lnum <= offset
@@ -87,6 +92,9 @@ def FindPairs(b: number, cur: list<number>): any
     offset -= SEARCH_LINE_COUNT
     # find the end
     for s in starts->reverse()
+      if 0 < g:hlpairs.timeout && timeout_sec < reltimefloat(start_time->reltime())
+        return []
+      endif
       if cur_lnum ==# s.lnum && cur_byteidx < s.byteidx
         continue
       endif
@@ -106,7 +114,6 @@ def FindPairs(b: number, cur: list<number>): any
         if pair.s_full !=# pair.s
           const p = pos_list[0]
           const t = getline(p[0])[p[1] - 1 :]
-          g:t = t
           const l = t->matchstr(pair.s_full)->len()
           if !l
             pos_list = []
@@ -172,6 +179,9 @@ def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>, has_skip
     )
     offset += SEARCH_LINE_COUNT
     for ma in matches
+      if 0 < g:hlpairs.timeout && timeout_sec < reltimefloat(start_time->reltime())
+        return []
+      endif
       if ma.lnum ==# s.lnum && ma.byteidx < byteidx
         continue
       endif
