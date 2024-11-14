@@ -10,7 +10,7 @@ g:hlpairs = {
   key: '%',
   delay: 50,
   timeout: 50,
-  limit: -1,
+  limit: 0,
   filetype: {
   'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:\<\(catch\|finally\)\>:\<endtry\>,augroup .*:augroup END',
     'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\|if\)\>:\<end\>',
