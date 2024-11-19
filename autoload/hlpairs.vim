@@ -71,6 +71,32 @@ def IsSkip(s: any): bool
   return !!result
 enddef
 
+def FixPosList(pos_list: list<any>, pair: any): bool
+  # for HTML tag
+  if pair.s_full !=# pair.s
+    const p = pos_list[0]
+    const t = getline(p[0])[p[1] - 1 :]
+    const l = t->matchstr(pair.s_full)->len()
+    if !l
+      return false
+    endif
+    pos_list[0][2] = l
+  endif
+
+  # trim
+  for p in pos_list
+    const t = trim(p[3])
+    if t !=# p[3]
+      const s = match(p[3], '\S')
+      p[1] += s
+      p[2] = len(t)
+      g:p = p
+      g:s = s
+    endif
+  endfor
+  return true
+enddef
+
 def FindPairs(b: number, cur: list<number>): any
   # setup properties
   const limit = g:hlpairs.limit <= 0 ? line('$') : g:hlpairs.limit
@@ -111,17 +137,12 @@ def FindPairs(b: number, cur: list<number>): any
       endif
       const e = pos_list[-1]
       if cur[1] < e[0] || cur[1] ==# e[0] && cur[2] < e[1] + e[2]
-        if pair.s_full !=# pair.s
-          const p = pos_list[0]
-          const t = getline(p[0])[p[1] - 1 :]
-          const l = t->matchstr(pair.s_full)->len()
-          if !l
-            pos_list = []
-            continue
-          endif
-          pos_list[0][2] = l
+        if FixPosList(pos_list, pair)
+          return pos_list
+        else
+          pos_list = []
+          continue
         endif
-        return pos_list
       endif
     endfor
   endwhile
@@ -149,7 +170,7 @@ def GetPairParams(text: string): any
 enddef
 
 def ToPosItem(s: any): any
-  return [s.lnum, s.byteidx + 1, s.text->len()]
+  return [s.lnum, s.byteidx + 1, s.text->len(), s.text]
 enddef
 
 def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>, has_skip: bool): any
