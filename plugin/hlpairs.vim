@@ -23,7 +23,7 @@ g:hlpairs = {
       ],
       ignores: '<:>'
     },
-    'bash,zsh': {
+    'sh,bash,zsh': {
       matchpairs: [
         '\<if\>:\<\(then\|elif\|else\)\>:\<fi\>',
         '\<case\>:\<\in\>\|^\s*[^)]\+):\<esac\>',
