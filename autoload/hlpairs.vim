@@ -90,8 +90,6 @@ def FixPosList(pos_list: list<any>, pair: any): bool
       const s = match(p[3], '\S')
       p[1] += s
       p[2] = len(t)
-      g:p = p
-      g:s = s
     endif
   endfor
   return true
