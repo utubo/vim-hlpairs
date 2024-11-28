@@ -362,8 +362,8 @@ export def TextObj(a: bool)
   if !p
     return
   endif
-  var [sy, sx, sl] = p[0]
-  var [ey, ex, el] = p[-1]
+  var [sy, sx, sl, st] = p[0]
+  var [ey, ex, el, et] = p[-1]
   const c = getpos('.')
   var m = mode()
   if m ==# 'v' || m ==# 'V'
