@@ -12,9 +12,15 @@ g:hlpairs = {
   timeout: 50,
   limit: 0,
   filetype: {
-  'vim': '\<if\>:else\(if\)\?:endif,\<for\>:\<endfor\>,while:endwhile,function:endfunction,\<def\>:enddef,\<try\>:\<\(catch\|finally\)\>:\<endtry\>,augroup .*:augroup END',
-    'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\|if\)\>:\<end\>',
-    'lua': '\<if\>:\(else\|elseif\):\<end\>,\<\(function\|while\|for\|do\|if\)\>:\<end\>,\[\[:\]\]',
+    'vim': [
+      '\<if\>:\<else\(if\)\?\>:\<endif\>',
+      '\<for\>:\<endfor\>',
+      '\<while\>:\<endwhile\>',
+      '\<function\>:\<endfunction\>',
+      '\<\(export\s\+\)\?def\>:\<enddef\>',
+      '\<try\>:\<\(catch\|finally\)\>:\<endtry\>',
+      '\<augroup\s\+\S*\>:\<augroup END\>',
+    ],
     'html,xml': {
       matchpairs: [
         '\<[a-zA-Z0-9_\:-]\+=":"',
@@ -30,6 +36,8 @@ g:hlpairs = {
         '\<do\>:\<done\>',
       ],
     },
+    'lua': '\<if\>:\(else\|elseif\):\<end\>,\<\(function\|while\|for\|do\|if\)\>:\<end\>,\[\[:\]\]',
+    'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\|if\)\>:\<end\>',
     '*': '\w\@<!\w*(:)',
   },
   skip: {
