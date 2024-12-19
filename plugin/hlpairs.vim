@@ -54,10 +54,12 @@ augroup END
 
 if !!g:hlpairs.key
   const k = g:hlpairs.key
-  execute $"nnoremap {k} <ScriptCmd>call hlpairs#Jump()<CR>"
-  execute $"nnoremap ]{k} <Cmd>call hlpairs#Jump('f')<CR>"
-  execute $"nnoremap [{k} <Cmd>call hlpairs#Jump('b')<CR>"
-  execute $"nnoremap <Leader>{k} <Cmd>call hlpairs#HighlightOuter()<CR>"
-  execute $"nnoremap <Space>{k} <Cmd>call hlpairs#ReturnCursor()<CR>"
+  for map in ['nnoremap', 'xnoremap']
+    execute $"{map} {k} <ScriptCmd>call hlpairs#Jump()<CR>"
+    execute $"{map} ]{k} <Cmd>call hlpairs#Jump('f')<CR>"
+    execute $"{map} [{k} <Cmd>call hlpairs#Jump('b')<CR>"
+    execute $"{map} <Leader>{k} <Cmd>call hlpairs#HighlightOuter()<CR>"
+    execute $"{map} <Space>{k} <Cmd>call hlpairs#ReturnCursor()<CR>"
+  endfor
   execute $"hlpairs#TextObjUserMap('{k}')"
 endif
