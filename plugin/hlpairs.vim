@@ -20,6 +20,7 @@ g:hlpairs = {
       '\<\(export\s\+\)\?def\>:\<enddef\>',
       '\<try\>:\<\(catch\|finally\)\>:\<endtry\>',
       '\<augroup\s\+\S*\>:\<augroup END\>',
+      '\c<\(Script\)\?Cmd>:\c<CR>',
     ],
     'html,xml': {
       matchpairs: [
