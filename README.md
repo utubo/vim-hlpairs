@@ -8,6 +8,8 @@ vim-hlpairs highlights the parentheses around the cursor.
 
 Vim 9.1.0009 or later
 
+or you can use [hlpairs.nvim](https://github.com/utubo/hlpairs.nvim) in Neovim.
+
 ## Installation
 
 ```vim
