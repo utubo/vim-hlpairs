@@ -377,7 +377,7 @@ export def TextObj(around: string, vcount: number = 1)
   endif
   var a = around
   const count = max([vcount, 1])
-  const [buf, cx, cy, offset]  = getpos('.')
+  const [buf, cy, cx, offset]  = getpos('.')
   # support v:count
   if (a ==# 'A' || a ==# 'I') && 1 < count
     # ignore sub blocks e.g. `if-elseif-else-endif`
