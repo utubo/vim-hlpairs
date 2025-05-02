@@ -59,7 +59,7 @@ if !!g:hlpairs.key
     execute $"{map} {k} <ScriptCmd>call hlpairs#Jump()<CR>"
     execute $"{map} ]{k} <Cmd>call hlpairs#Jump('f')<CR>"
     execute $"{map} [{k} <Cmd>call hlpairs#Jump('b')<CR>"
-    execute $"{map} <Leader>{k} <Cmd>call hlpairs#HighlightOuter()<CR>"
+    execute $"{map} <Leader>{k} <Cmd>call hlpairs#HighlightOuter(v:count)<CR>"
     execute $"{map} <Space>{k} <Cmd>call hlpairs#ReturnCursor()<CR>"
   endfor
   execute $"hlpairs#TextObjUserMap('{k}')"

@@ -12,7 +12,7 @@ suite.before = () => {
   nnoremap % <ScriptCmd>call hlpairs#Jump()<CR>
   nnoremap ]% <Cmd>call hlpairs#Jump('f')<CR>
   nnoremap [% <Cmd>call hlpairs#Jump('b')<CR>
-  nnoremap <Leader>% <Cmd>call hlpairs#HighlightOuter()<CR>
+  nnoremap <Leader>% <Cmd>call hlpairs#HighlightOuter(v:count)<CR>
   nnoremap <Space>% <Cmd>call hlpairs#ReturnCursor()<CR>
   # hlpairs#TextObjUserMap('%')
 }
@@ -101,5 +101,63 @@ suite.HighlightOuter = () => {
   assert.equals(getpos('.')[1 : 2], [4, 3], 'jump to endif with %')
   feedkeys('%', 'xt')
   assert.equals(getpos('.')[1 : 2], [2, 3], 'jump to if with %')
+}
+
+suite.HighlightOuterWithVcount = () => {
+  feedkeys('jj$h', 'xt')
+  doautocmd CursorMoved *
+  feedkeys('2\%', 'xt')
+  feedkeys('%', 'xt')
+  assert.equals(getpos('.')[1 : 2], [4, 3], 'jump to endif with %')
+  feedkeys('%', 'xt')
+  assert.equals(getpos('.')[1 : 2], [2, 3], 'jump to if with %')
+}
+
+suite.TextObjInner = () => {
+  feedkeys('5j', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('yi%', 'xt')
+  assert.equals(@", "  nop\n", 'select inner')
+}
+
+suite.TextObjAroundElseif = () => {
+  feedkeys('5j', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('ya%', 'xt')
+  assert.equals(@", "elseif test2\n  nop\n", 'select around elseif')
+}
+
+suite.TextObjAroundIfThen = () => {
+  feedkeys('j', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('ya%', 'xt')
+  assert.equals(@", (getline(2, 4) + ['elseif'])->join("\n"), 'select around if-then')
+}
+
+suite.TextObjAroundAll = () => {
+  feedkeys('j', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('yA%', 'xt')
+  assert.equals(@", getline(1, 7)->join("\n"), 'select around all')
+}
+
+suite.TextObjWithVcount = () => {
+  feedkeys('jj$hhh', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('2yi%', 'xt')
+  assert.equals(@", '(a ? 1 : 0)', 'select with vcount')
+}
+
+suite.TextObjFromCursor = () => {
+  feedkeys('jj$5h', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('2y%', 'xt')
+  assert.equals(@", ': 0', 'select with from cursor')
 }
 

@@ -345,26 +345,79 @@ export def ReturnCursor()
   endif
 enddef
 
-export def HighlightOuter()
+export def HighlightOuter(vcount: number = 1)
   const p = GetPosList()
   if !p
+    return
+  endif
+  if 1 < vcount
+    for i in range(vcount)
+      HighlightOuter()
+    endfor
     return
   endif
   const c = getcurpos()
   prevent_remark = 1
-  setpos('.', [0, p[0][0], p[0][1] - 1])
+  var [y, x] = p[0][0 : 1]
+  x -= 1
+  if x <= 1 && 1 < y
+    y -= 1
+    x = y->getline()->len()
+  endif
+  setpos('.', [0, y, x])
   HighlightPair()
   setpos('.', c)
 enddef
 
-export def TextObj(a: bool)
+export def TextObj(around: string, vcount: number = 1)
   const p = GetPosList()
-  if !p
+  const lenp = len(p)
+  if lenp < 2
     return
+  endif
+  var a = around
+  const count = max([vcount, 1])
+  const c = getpos('.')
+  # support v:count
+  if (a ==# 'A' || a ==# 'I') && 1 < count
+    # ignore sub blocks e.g. `if-elseif-else-endif`
+    for i in range(count - 1)
+      HighlightOuter()
+      TextObj(a, 1)
+    endfor
+    return
+  endif
+  if lenp <= count
+    HighlightOuter()
+    TextObj(around, count - lenp + 1)
+    return
+  endif
+  # default selection
+  if lenp ==# count + 1
+    a = a->toupper()
   endif
   var [sy, sx, sl, st] = p[0]
   var [ey, ex, el, et] = p[-1]
-  const c = getpos('.')
+  # find block
+  var index = -1
+  if 2 < lenp && (a ==# 'i' || a ==# 'a' || a ==# '')
+    for i in range(lenp)
+      var [y, x, l, t] = p[i]
+      if c[1] < y || c[1] ==# y && c[2] <= x
+        index = i - 1
+        break
+      endif
+    endfor
+    if index < 0
+      return
+    endif
+    [sy, sx, sl, st] = p[index]
+    [ey, ex, el, et] = p[min([index + count, lenp - 1])]
+  endif
+  if a ==# ''
+    [sy, sx, sl, st] = [c[1], c[2], 0, '']
+  endif
+  # ready
   var m = mode()
   if m ==# 'v' || m ==# 'V'
     execute 'normal!' m
@@ -374,25 +427,29 @@ export def TextObj(a: bool)
   setpos('.', [c[0], ey, ex, c[3]])
   execute 'normal!' m
   setpos('.', [c[0], sy, sx, c[3]])
-  if a
-    if 1 < el
-      execute $'normal! o{el - 1}l'
-    endif
+  # start
+  var indent = ''
+  if a ==# 'A' || a ==# 'a' && 0 < index
+    # nop
   else
-    # start
-    execute $'normal! {sl}l'
-    var indent = ''
+    if sl !=# 0
+      execute $'normal! {sl}l'
+    endif
     if sy + 1 < ey
       # keep linebreak
       normal! j0
       indent = getline(sy)->matchstr('^\s\+')
     endif
-    # end
-    if ex < 2 || getline(ey)[ : ex - 2] ==# indent
-      normal! ok$
-    else
-      normal! oh
+  endif
+  # end
+  if a ==# 'A' || a ==# 'a' && index <= 0
+    if 1 < el
+      execute $'normal! o{el - 1}l'
     endif
+  elseif ex < 2 || getline(ey)[ : ex - 2] ==# indent
+    normal! ok$
+  else
+    normal! oh
   endif
 enddef
 
@@ -406,9 +463,10 @@ enddef
 
 export def TextObjUserMap(key: string)
   for o in ['o', 'v']
-    for a in ['a', 'i']
-      execute $'{o}noremap {a}{key} <ScriptCmd>hlpairs#TextObj({a ==# 'a'})<CR>'
+    for a in ['a', 'i', 'A', 'I']
+      execute $'{o}noremap {a}{key} <ScriptCmd>hlpairs#TextObj("{a}", v:count)<CR>'
     endfor
   endfor
+  execute $'onoremap {key} <ScriptCmd>hlpairs#TextObj("")<CR>'
 enddef
 
