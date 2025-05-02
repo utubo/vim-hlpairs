@@ -37,8 +37,8 @@ g:hlpairs = {
         '\<do\>:\<done\>',
       ],
     },
-    'lua': '\<if\>:\(else\|elseif\):\<end\>,\<\(function\|do\|if\)\>:\<end\>,\[\[:\]\]',
-    'ruby': '\<if\>:\(else\|elsif\):\<end\>,\<\(def\|do\|class\|if\)\>:\<end\>',
+    'lua': '\<\(function\|do\|if\)\>:\<else\(if\)\?\>:\<end\>,\[\[:\]\]',
+    'ruby': '\<\(def\|do\|class\|if\)\>:\<\(else\|elsif\)\>:\<end\>',
     '*': '\w\@<!\w*(:)',
   },
   skip: {
