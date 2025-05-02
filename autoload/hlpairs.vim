@@ -377,7 +377,7 @@ export def TextObj(around: string, vcount: number = 1)
   endif
   var a = around
   const count = max([vcount, 1])
-  const c = getpos('.')
+  const [buf, cx, cy, offset]  = getpos('.')
   # support v:count
   if (a ==# 'A' || a ==# 'I') && 1 < count
     # ignore sub blocks e.g. `if-elseif-else-endif`
@@ -403,7 +403,7 @@ export def TextObj(around: string, vcount: number = 1)
   if 2 < lenp && (a ==# 'i' || a ==# 'a' || a ==# '')
     for i in range(lenp)
       var [y, x, l, t] = p[i]
-      if c[1] < y || c[1] ==# y && c[2] <= x
+      if cy < y || cy ==# y && cx <= x
         index = i - 1
         break
       endif
@@ -415,7 +415,7 @@ export def TextObj(around: string, vcount: number = 1)
     [ey, ex, el, et] = p[min([index + count, lenp - 1])]
   endif
   if a ==# ''
-    [sy, sx, sl, st] = [c[1], c[2], 0, '']
+    [sy, sx, sl, st] = [cy, cx, 0, '']
   endif
   # ready
   var m = mode()
@@ -424,9 +424,9 @@ export def TextObj(around: string, vcount: number = 1)
   else
     m = 'v'
   endif
-  setpos('.', [c[0], ey, ex, c[3]])
+  setpos('.', [buf, ey, ex, offset])
   execute 'normal!' m
-  setpos('.', [c[0], sy, sx, c[3]])
+  setpos('.', [buf, sy, sx, offset])
   # start
   var indent = ''
   if a ==# 'A' || a ==# 'a' && 0 < index
