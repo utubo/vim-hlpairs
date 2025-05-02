@@ -159,7 +159,7 @@ The default is
 
 `<Space>%`		Return the cursor before jump with `%`.
 
-`%`,`a%`,`i%,`A%`,`I%`	onoremap. See |hlpairs-textobj|.
+`%`,`a%`,`i%`,`A%`,`I%`	onoremap. See |hlpairs-textobj|.
 
 ------------------------------------------------------------------------------
 TEXT OBJECT					*hlpairs-textobj*
