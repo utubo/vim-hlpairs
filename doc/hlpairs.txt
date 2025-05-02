@@ -183,7 +183,7 @@ When the cursor is `A`.
 You can `2da%` to delete all.
 
 if-else-endif
-:Note This does not work well `if-elseif`.
+Note: This does not work well `if-elseif`.
 
 e.g.)
 >
