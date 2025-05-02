@@ -383,8 +383,8 @@ export def TextObj(around: string, vcount: number = 1)
     # ignore sub blocks e.g. `if-elseif-else-endif`
     for i in range(count - 1)
       HighlightOuter()
-      TextObj(a, 1)
     endfor
+    TextObj(a, 1)
     return
   endif
   if lenp <= count
