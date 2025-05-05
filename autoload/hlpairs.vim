@@ -65,10 +65,26 @@ enddef
 
 def IsSkip(s: any): bool
   const c = getpos('.')
-  setpos('.', [c[0], s.lnum, s.byteidx, c[3]])
-  const result = eval(b:hlpairs.skip)
-  setpos('.', c)
+  noautocmd setpos('.', [c[0], s.lnum, s.byteidx, c[3]])
+  var result: any = false
+  try
+    result = eval(b:hlpairs.skip)
+  catch
+    g:hlpairs_err = v:exception
+  finally
+    noautocmd setpos('.', c)
+  endtry
   return !!result
+enddef
+
+export def IsSyn(...names: list<string>): bool
+  const name = synID(line("."), col("."), 0)->synIDattr('name')
+  for n in names
+    if n ==# name
+      return true
+    endif
+  endfor
+  return false
 enddef
 
 def FixPosList(pos_list: list<any>, pair: any): bool
@@ -364,9 +380,9 @@ export def HighlightOuter(vcount: number = 1)
     y -= 1
     x = y->getline()->len()
   endif
-  setpos('.', [0, y, x])
+  noautocmd setpos('.', [0, y, x])
   HighlightPair()
-  setpos('.', c)
+  noautocmd setpos('.', c)
 enddef
 
 export def TextObj(around: string, vcount: number = 1)
@@ -424,9 +440,9 @@ export def TextObj(around: string, vcount: number = 1)
   else
     m = 'v'
   endif
-  setpos('.', [buf, ey, ex, offset])
+  noautocmd setpos('.', [buf, ey, ex, offset])
   execute 'normal!' m
-  setpos('.', [buf, sy, sx, offset])
+  noautocmd setpos('.', [buf, sy, sx, offset])
   # start
   var indent = ''
   if a ==# 'A' || a ==# 'a' && 0 < index

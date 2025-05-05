@@ -42,6 +42,7 @@ g:hlpairs = {
     '*': '\w\@<!\w*(:)',
   },
   skip: {
+    'vim': 'hlpairs#IsSyn("vimLineComment", "vim9Comment")',
     'ruby': 'getline(".") =~ "\\S\\s*if\\s"',
   },
 }
