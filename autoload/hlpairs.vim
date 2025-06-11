@@ -65,7 +65,7 @@ enddef
 
 def IsSkip(s: any): bool
   const c = getpos('.')
-  noautocmd setpos('.', [c[0], s.lnum, s.byteidx, c[3]])
+  noautocmd setpos('.', [c[0], s.lnum, s.byteidx + 1, c[3]])
   var result: any = false
   try
     result = eval(b:hlpairs.skip)
