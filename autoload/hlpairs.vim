@@ -247,7 +247,7 @@ def FindEnd(b: number, max_lnum: number, s: dict<any>, pair: dict<any>, has_skip
   return []
 enddef
 
-def ToList(v: any): any
+def Csv(v: any): any
   return type(v) ==# v:t_string ? v->split(',') : v
 enddef
 
@@ -262,15 +262,15 @@ def OnOptionSet()
     for [k, v] in g:hlpairs.filetype->items()
       if k->split(',')->index(&filetype) !=# -1
         if type(v) ==# v:t_dict
-          ftpairs += v.matchpairs->ToList()
-          ignores += get(v, 'ignores', '')->ToList()
+          ftpairs += v.matchpairs->Csv()
+          ignores += get(v, 'ignores', '')->Csv()
         else
-          ftpairs += v->ToList()
+          ftpairs += v->Csv()
         endif
       endif
     endfor
   endif
-  ftpairs += g:hlpairs.filetype['*']->ToList()
+  ftpairs += g:hlpairs.filetype['*']->Csv()
   ftpairs += &matchpairs->split(',')
   var pairs = []
   for sme in ftpairs
