@@ -72,7 +72,7 @@ g:hlpairs					*g:hlpairs*
 				If `key` is empty, hlpairs does not map.
 		`delay`		The delay milliseconds to highlight.
 		`timeout`	The search stops when more than this many
-				millisecond shave passed.
+				milliseconds have passed.
 				if less than `1` then it does not timeout.
 		`limit`		Limit number of lines to search.
 				if less than `1` then it searches all lines.
