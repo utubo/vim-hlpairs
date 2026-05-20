@@ -127,7 +127,7 @@ g:hlpairs					*g:hlpairs*
 	    },
 	    'lua': '\<\(function\|do\|if\)\>:\<else\(if\)\?\>:\<end\>,\[\[:\]\]',
 	    'ruby': '\<\(def\|do\|class\|if\)\>:\<\(else\|elsif\)\>:\<end\>',
-	    '*': '\w\@<!\w*(:)',
+	    '*': '\([a-zA-Z_]\w*\)\?(:)',
 	  },
 	  skip: {
 	    'vim': 'hlpairs#IsSyn("vimLineComment", "vim9Comment")',
