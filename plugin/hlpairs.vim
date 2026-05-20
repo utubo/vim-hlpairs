@@ -21,6 +21,7 @@ g:hlpairs = {
       '\<try\>:\<\(catch\|finally\)\>:\<endtry\>',
       '\<augroup\s\+\S*\>:\<augroup END\>',
       '\c<\(Script\)\?Cmd>:\c<CR>',
+      '[a-zA-Z_#]*(:)',
     ],
     'html,xml': {
       matchpairs: [
