@@ -92,6 +92,12 @@ g:hlpairs					*g:hlpairs*
 				before `\%(`.
 				The whitespaces will be trimmed.
 
+	You only need to specify the options you want to change from the
+	default values.
+	e.g.)
+>
+	g:hlpairs = { key: '!' }
+<
 	The default is
 >
 	g:hlpairs = {
@@ -241,7 +247,7 @@ When the cursor is bar.
 `3a%` or `A%` selects all.
 `4a%` selects the pairs outside of `if-endif`
 
-You can now expand your visual selection incrementally by pressing `%` repeatedly.
+You can expand your visual selection incrementally by pressing `%` repeatedly.
 
 ------------------------------------------------------------------------------
 FUNCTIONS					*hlpairs-functions*
