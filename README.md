@@ -4,6 +4,12 @@ vim-hlpairs highlights the parentheses around the cursor.
 
 <img src="https://user-images.githubusercontent.com/6848636/225357852-5eca2053-ee41-41a3-9d57-d6bd249b29cc.gif" width="400">
 
+> [!WARNING]
+> **Breaking Changes in Visual Mode `%` Behavior**
+> 
+> * **Deprecated:** `A%` and `I%` text objects have been removed.
+> * **New Feature:** You can now expand your visual selection incrementally by pressing `%` repeatedly.
+
 ## Requirements
 
 Vim 9.1.0009 or later

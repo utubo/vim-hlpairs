@@ -7,6 +7,7 @@ var mark = [] # origin cursorpos
 var prevent_remark = 0
 var start_time = reltime()
 var timeout_sec = 0.0
+var visual_selected = ''
 
 export def CursorMoved()
   if timer !=# 0
@@ -319,7 +320,11 @@ def GetPosList(): any
   return w:hlpairs.pos
 enddef
 
-export def Jump(flags: string = ''): bool
+export def Jump(flags: string = '', count: number = 1): bool
+  if !!visual_selected
+    ExpandVisualSelect()
+    return false
+  endif
   const pos_list = GetPosList()
   if !pos_list
     return false
@@ -385,7 +390,11 @@ export def HighlightOuter(vcount: number = 1)
   noautocmd setpos('.', c)
 enddef
 
-export def TextObj(around: string, vcount: number = 1)
+export def TextObj(mapping: string, around: string, vcount: number = 1)
+  if mapping ==# 'x'
+    visual_selected = around
+    autocmd CursorMoved ++once visual_selected = ''
+  endif
   const p = GetPosList()
   const lenp = len(p)
   if lenp < 2
@@ -400,12 +409,12 @@ export def TextObj(around: string, vcount: number = 1)
     for i in range(count - 1)
       HighlightOuter()
     endfor
-    TextObj(a, 1)
+    TextObj(mapping, a, 1)
     return
   endif
   if lenp <= count
     HighlightOuter()
-    TextObj(around, count - lenp + 1)
+    TextObj(mapping, around, count - lenp + 1)
     return
   endif
   # default selection
@@ -469,20 +478,32 @@ export def TextObj(around: string, vcount: number = 1)
   endif
 enddef
 
-export def JumpBack()
-  Jump('b')
+export def JumpBack(count: number = 1)
+  Jump('b', count)
 enddef
 
-export def JumpForward()
-  Jump('fe')
+export def JumpForward(count: number = 1)
+  Jump('fe', count)
+enddef
+
+def ExpandVisualSelect()
+  const head = getpos("'[")
+  const tail = getpos("']")
+  TextObj('x', visual_selected->toupper())
+  if head ==# getpos("'[") && tail ==# getpos("']")
+    HighlightOuter()
+    TextObj('x', visual_selected)
+  endif
 enddef
 
 export def TextObjUserMap(key: string)
-  for o in ['o', 'v']
-    for a in ['a', 'i', 'A', 'I']
-      execute $'{o}noremap {a}{key} <ScriptCmd>hlpairs#TextObj("{a}", v:count)<CR>'
+  for o in ['o', 'x']
+    for a in ['a', 'i']
+      execute $'{o}noremap {a}{key} <ScriptCmd>hlpairs#TextObj("{o}", "{a}", v:count)<CR>'
     endfor
   endfor
-  execute $'onoremap {key} <ScriptCmd>hlpairs#TextObj("")<CR>'
+  execute $'onoremap A{key} <ScriptCmd>hlpairs#TextObj("o", "A", v:count)<CR>'
+  execute $'onoremap I{key} <ScriptCmd>hlpairs#TextObj("o", "I", v:count)<CR>'
+  execute $'onoremap {key} <ScriptCmd>hlpairs#TextObj("o", "")<CR>'
 enddef
 

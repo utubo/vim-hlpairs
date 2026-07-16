@@ -58,9 +58,9 @@ augroup END
 if !!g:hlpairs.key
   const k = g:hlpairs.key
   for map in ['nnoremap', 'xnoremap']
-    execute $"{map} {k} <ScriptCmd>call hlpairs#Jump()<CR>"
-    execute $"{map} ]{k} <Cmd>call hlpairs#Jump('f')<CR>"
-    execute $"{map} [{k} <Cmd>call hlpairs#Jump('b')<CR>"
+    execute $"{map} {k} <ScriptCmd>call hlpairs#Jump('', v:count)<CR>"
+    execute $"{map} ]{k} <Cmd>call hlpairs#Jump(v:count, 'f')<CR>"
+    execute $"{map} [{k} <Cmd>call hlpairs#Jump(v:count, 'b')<CR>"
     execute $"{map} <Leader>{k} <Cmd>call hlpairs#HighlightOuter(v:count)<CR>"
     execute $"{map} <Space>{k} <Cmd>call hlpairs#ReturnCursor()<CR>"
   endfor
