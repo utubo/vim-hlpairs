@@ -316,11 +316,11 @@ def GetPosList(): list<any>
   if !!p
     return p
   endif
-  return w:hlpairs.pos
+  return p
 enddef
 
 export def Jump(flags: string = '', count: number = 1): bool
-  if !!visual_selected
+  if !!visual_selected && mode() ==# 'v'
     ExpandVisualSelect()
     return false
   endif
@@ -495,7 +495,7 @@ def ExpandVisualSelect()
     return
   endif
   const pos_list = GetPosList()
-  if len(pos_list) !=# 2
+  if 2 < len(pos_list)
     setpos("'[", [0, pos_list[0][0], pos_list[0][1]])
     setpos("']", [0, pos_list[-1][0], pos_list[-1][1]])
   endif
