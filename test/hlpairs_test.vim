@@ -120,6 +120,24 @@ suite.HighlightOuterWithVcount = () => {
   assert.equals(getpos('.')[1 : 2], [2, 3], 'jump to if with %')
 }
 
+suite.ExpandVisualSelect = () => {
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('%', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  assert.equals(getpos('.')[1 : 2], [5, 1], 'jump to elseif with %')
+  feedkeys('j', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
+  feedkeys('Va%', 'xt')
+  assert.equals(getpos('.')[1 : 2], [6, 6], 'select visual ".')
+  assert.equals(getpos('v')[1 : 2], [5, 1], 'select visual "v')
+  feedkeys('%', 'xt')
+  assert.equals(getpos('.')[1 : 2], [7, 1], 'expand visual ".')
+  assert.equals(getpos('v')[1 : 2], [5, 1], 'expand visual "v')
+}
+
 suite.TextObjInner = () => {
   feedkeys('5j', 'xt')
   doautocmd CursorMoved *
