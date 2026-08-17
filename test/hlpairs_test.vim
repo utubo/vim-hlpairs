@@ -98,6 +98,8 @@ suite.HighlightOuter = () => {
   call hlpairs#HighlightOuter()
   call hlpairs#HighlightOuter()
   feedkeys('%', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
   assert.equals(getpos('.')[1 : 2], [4, 3], 'jump to endif with %')
   feedkeys('%', 'xt')
   assert.equals(getpos('.')[1 : 2], [2, 3], 'jump to if with %')
@@ -106,10 +108,15 @@ suite.HighlightOuter = () => {
 suite.HighlightOuterWithVcount = () => {
   feedkeys('jj$h', 'xt')
   doautocmd CursorMoved *
+  sleep 2m
   feedkeys('2\%', 'xt')
   feedkeys('%', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
   assert.equals(getpos('.')[1 : 2], [4, 3], 'jump to endif with %')
   feedkeys('%', 'xt')
+  doautocmd CursorMoved *
+  sleep 2m
   assert.equals(getpos('.')[1 : 2], [2, 3], 'jump to if with %')
 }
 
