@@ -311,12 +311,11 @@ def OnOptionSet()
 enddef
 
 
-def GetPosList(): any
+def GetPosList(): list<any>
   var p = get(w:, 'hlpairs', { pos: [] }).pos
   if !!p
     return p
   endif
-  HighlightPair()
   return w:hlpairs.pos
 enddef
 
@@ -326,6 +325,7 @@ export def Jump(flags: string = '', count: number = 1): bool
     return false
   endif
   const pos_list = GetPosList()
+  HighlightPair()
   if !pos_list
     return false
   endif
@@ -368,6 +368,7 @@ enddef
 
 export def HighlightOuter(vcount: number = 1)
   const p = GetPosList()
+  HighlightPair()
   if !p
     return
   endif
@@ -490,10 +491,19 @@ def ExpandVisualSelect()
   const head = getpos("'[")
   const tail = getpos("']")
   TextObj('x', visual_selected->toupper())
-  if head ==# getpos("'[") && tail ==# getpos("']")
-    HighlightOuter()
-    TextObj('x', visual_selected)
+  if head !=# getpos("'[") || tail !=# getpos("']")
+    return
   endif
+  const pos_list = GetPosList()
+  if len(pos_list) !=# 2
+    setpos("'[", [0, pos_list[0][0], pos_list[0][1]])
+    setpos("']", [0, pos_list[-1][0], pos_list[-1][1]])
+  endif
+  if head !=# getpos("'[") || tail !=# getpos("']")
+    return
+  endif
+  HighlightOuter()
+  TextObj('x', visual_selected)
 enddef
 
 export def TextObjUserMap(key: string)
