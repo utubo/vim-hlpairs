@@ -315,8 +315,10 @@ def GetPosList(): list<any>
   var p = get(w:, 'hlpairs', { pos: [] }).pos
   if !!p
     return p
+  else
+    HighlightPair()
+    return w:hlpairs.pos
   endif
-  return p
 enddef
 
 export def Jump(flags: string = '', count: number = 1): bool
@@ -325,7 +327,6 @@ export def Jump(flags: string = '', count: number = 1): bool
     return false
   endif
   const pos_list = GetPosList()
-  HighlightPair()
   if !pos_list
     return false
   endif
@@ -368,7 +369,6 @@ enddef
 
 export def HighlightOuter(vcount: number = 1)
   const p = GetPosList()
-  HighlightPair()
   if !p
     return
   endif
